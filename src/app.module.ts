@@ -7,10 +7,9 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ClientsModule } from './clients/clients.module';
 import { RoutesModule } from './routes/routes.module';
-import { AuthModule } from './auth/auth.module';
-import { RoutesModule } from './routes/routes.module';
-import { ClientsModule } from './clients/clients.module';
-import { UsersModule } from './users/users.module';
+import { TrackingModule } from './tracking/tracking.module';
+import { ReportsModule } from './reports/reports.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -35,6 +34,9 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     RoutesModule,
     ClientsModule,
+    TrackingModule,
+    ReportsModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
