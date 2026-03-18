@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Client } from '../../clients/entities/client.entity';
 
@@ -15,15 +15,16 @@ export class Route {
 
   @Column({
     type: 'enum',
-    enum: ['planned', 'in_progress', 'completed'],
-    default: 'planned',
+    enum: ['planeado', 'en_progreso', 'completado'],
+    default: 'planeado',
   })
   status: string;
 
   @ManyToOne(() => User, (user) => user.routes)
+  @JoinColumn({ name: 'worker_id' })
   worker: User;
 
-  @OneToMany(() => Client, (client) => client.route)
+  @OneToMany(() => Client, (client) => client.route, { cascade: true })
   clients: Client[];
 
   @CreateDateColumn({ type: 'timestamp with time zone' })

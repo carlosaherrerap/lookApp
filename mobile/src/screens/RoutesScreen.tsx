@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 import { Theme } from '../constants/theme';
 import axios from 'axios';
 import * as SQLite from 'expo-sqlite';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'http://10.0.2.2:3000'; // IP para emulador Android
+const API_URL = 'http://192.168.1.55:3009';
 
-export const RoutesScreen = ({ user, navigation }) => {
-  const [routes, setRoutes] = useState([]);
+export const RoutesScreen = ({ user, navigation, onLogout }: { user: any, navigation: any, onLogout: () => void }) => {
+  const [routes, setRoutes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -16,9 +17,14 @@ export const RoutesScreen = ({ user, navigation }) => {
     else setLoading(true);
 
     try {
+      const token = await AsyncStorage.getItem('user_token');
+      if (!token) throw new Error('No hay sesión activa');
+
       // 1. Intentar obtener de la API
       const response = await axios.get(`${API_URL}/routes/worker`, {
-        headers: { Authorization: `Bearer ${user.token}` }
+        headers: { 
+          Authorization: `Bearer ${token}`
+        }
       });
       
       const remoteRoutes = response.data;
@@ -27,37 +33,63 @@ export const RoutesScreen = ({ user, navigation }) => {
       // 2. Cachear en SQLite local para uso offline
       const db = await SQLite.openDatabaseAsync('lookapp_offline.db');
       await db.runAsync('DELETE FROM local_routes');
+      await db.runAsync('DELETE FROM local_clients'); // Limpiar clientes antiguos
+      
       for (const route of remoteRoutes) {
         await db.runAsync(
           'INSERT INTO local_routes (id, name, assigned_date, status) VALUES (?, ?, ?, ?)',
           [route.id, route.name, route.assigned_date, route.status]
         );
+        
+        // Sincronizar clientes de esta ruta
+        if (route.clients && route.clients.length > 0) {
+          for (const client of route.clients) {
+            await db.runAsync(
+              'INSERT INTO local_clients (id, route_id, name, address, lat, lng, visit_order, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+              [client.id, route.id, client.name, client.address, client.lat, client.lng, client.visit_order || 0, client.status || 'pendiente']
+            );
+          }
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log('Error fetching from API, falling back to local DB:', error);
-      // 3. Fallback a DB local si no hay internet
+      
+      if (error?.response?.status === 401) {
+        Alert.alert('Sesión Expirada', 'Por favor inicia sesión nuevamente.', [
+          { text: 'OK', onPress: handleLogout }
+        ]);
+        return;
+      }
+
+      // 3. Fallback a DB local si no hay internet o hay otro error
       const db = await SQLite.openDatabaseAsync('lookapp_offline.db');
       const localRoutes = await db.getAllAsync('SELECT * FROM local_routes');
-      setRoutes(localRoutes);
+      setRoutes(localRoutes as any[]);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
+  const handleLogout = async () => {
+    onLogout();
+  };
+
   useEffect(() => {
     fetchRoutes();
   }, []);
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: any }) => (
     <TouchableOpacity 
       style={styles.routeCard}
       onPress={() => navigation.navigate('ClientDetail', { routeId: item.id })}
     >
       <View style={styles.cardHeader}>
         <Text style={styles.routeName}>{item.name}</Text>
-        <View style={[styles.badge, { backgroundColor: item.status === 'completed' ? Theme.colors.success : Theme.colors.warning }]}>
-          <Text style={styles.badgeText}>{item.status.toUpperCase()}</Text>
+        <View style={[styles.badge, { 
+          backgroundColor: item.status === 'completado' ? Theme.colors.success : (item.status === 'en_progreso' ? Theme.colors.primary : Theme.colors.warning) 
+        }]}>
+          <Text style={styles.badgeText}>{(item.status || 'planeado').toUpperCase()}</Text>
         </View>
       </View>
       <Text style={styles.routeDate}>{item.assigned_date}</Text>
@@ -66,7 +98,12 @@ export const RoutesScreen = ({ user, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mis Rutas</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={styles.title}>Mis Rutas</Text>
+        <TouchableOpacity onPress={handleLogout} style={{ marginTop: 20 }}>
+          <Text style={{ color: Theme.colors.error, fontWeight: 'bold' }}>Cerrar Sesión</Text>
+        </TouchableOpacity>
+      </View>
       {loading ? (
         <ActivityIndicator size="large" color={Theme.colors.primary} />
       ) : (

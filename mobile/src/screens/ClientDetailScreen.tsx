@@ -28,18 +28,32 @@ export const ClientDetailScreen = ({ route, navigation }) => {
     fetchClients();
   }, []);
 
-  const renderClient = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.clientCard}
-      onPress={() => navigation.navigate('ReportVisit', { client: item })}
-    >
-      <View style={styles.clientInfo}>
-        <Text style={styles.clientName}>{item.name}</Text>
-        <Text style={styles.clientAddress}>{item.address}</Text>
-      </View>
-      <View style={[styles.statusDot, { backgroundColor: item.status === 'visited' ? Theme.colors.success : Theme.colors.warning }]} />
-    </TouchableOpacity>
-  );
+  const renderClient = ({ item }) => {
+    const isFinished = item.status === 'visitado' || item.status === 'abandonado' || item.status === 'visited';
+    
+    return (
+      <TouchableOpacity 
+        style={[styles.clientCard, isFinished && { opacity: 0.5 }]}
+        onPress={() => !isFinished && navigation.navigate('ClientVisit', { client: item })}
+        disabled={isFinished}
+      >
+        <View style={styles.clientInfo}>
+          <Text style={styles.clientName}>{item.name}</Text>
+          <Text style={styles.clientAddress}>{item.address}</Text>
+          {isFinished && (
+            <Text style={{ color: item.status === 'abandonado' ? Theme.colors.danger : Theme.colors.success, fontSize: 12, fontWeight: 'bold' }}>
+              {item.status.toUpperCase()}
+            </Text>
+          )}
+        </View>
+        <View style={[styles.statusDot, { 
+          backgroundColor: isFinished 
+            ? (item.status === 'abandonado' ? Theme.colors.danger : Theme.colors.success) 
+            : Theme.colors.warning 
+        }]} />
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>

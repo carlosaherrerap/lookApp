@@ -1,0 +1,399 @@
+﻿[32m[Nest] 26080  - [39m03/18/2026, 10:43:57 AM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 26080  - [39m03/18/2026, 10:43:57 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTypeOrmModule dependencies initialized[39m[38;5;3m +41ms[39m
+[32m[Nest] 26080  - [39m03/18/2026, 10:43:57 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26080  - [39m03/18/2026, 10:43:57 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mEventsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26080  - [39m03/18/2026, 10:43:57 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 26080  - [39m03/18/2026, 10:43:57 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRoutesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26080  - [39m03/18/2026, 10:43:57 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mClientsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26080  - [39m03/18/2026, 10:43:57 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 26080  - [39m03/18/2026, 10:43:57 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26080  - [39m03/18/2026, 10:43:57 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26080  - [39m03/18/2026, 10:43:57 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +93ms[39m
+node : [31m[Nest] 26080  - [39m03/18/2026, 
+10:43:57 AM [31m  ERROR[39m 
+[38;5;3m[TypeOrmModule] [39m[31mUnable to 
+connect to the database. Retrying (1)...[39m
+At line:1 char:1
++ node dist/main.js > error.log 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([3 
+   1m[Nest] 260...ing (1)...[39m:String) [], R  
+  emoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+TypeORMError: Entity metadata for User#routes 
+was not found. Check if you specified a correct 
+entity object and if it's connected in the 
+connection options.
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:733:23
+    at Array.forEach (<anonymous>)
+    at 
+EntityMetadataBuilder.computeInverseProperties (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\metadata-builder\EntityMetadat
+aBuilder.js:726:34)
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:86:58
+    at Array.forEach (<anonymous>)
+    at EntityMetadataBuilder.build (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\metadata-builder\EntityMetadataBuilder.js:
+86:25)
+    at 
+ConnectionMetadataBuilder.buildEntityMetadatas (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\connection\ConnectionMetadataB
+uilder.js:66:150)
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:103:5)
+    at async DataSource.buildMetadatas (C:\Users\
+ASUS\Documents\github_Projects\lookApp\node_modul
+es\typeorm\data-source\DataSource.js:483:33)
+    at async DataSource.initialize (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\data-source\DataSource.js:145:13)
+[31m[Nest] 26080  - [39m03/18/2026, 10:44:01 
+AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] 
+[39m[31mUnable to connect to the database. 
+Retrying (2)...[39m
+TypeORMError: Entity metadata for User#routes 
+was not found. Check if you specified a correct 
+entity object and if it's connected in the 
+connection options.
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:733:23
+    at Array.forEach (<anonymous>)
+    at 
+EntityMetadataBuilder.computeInverseProperties (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\metadata-builder\EntityMetadat
+aBuilder.js:726:34)
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:86:58
+    at Array.forEach (<anonymous>)
+    at EntityMetadataBuilder.build (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\metadata-builder\EntityMetadataBuilder.js:
+86:25)
+    at 
+ConnectionMetadataBuilder.buildEntityMetadatas (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\connection\ConnectionMetadataB
+uilder.js:66:150)
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:103:5)
+    at async DataSource.buildMetadatas (C:\Users\
+ASUS\Documents\github_Projects\lookApp\node_modul
+es\typeorm\data-source\DataSource.js:483:33)
+    at async DataSource.initialize (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\data-source\DataSource.js:145:13)
+[31m[Nest] 26080  - [39m03/18/2026, 10:44:04 
+AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] 
+[39m[31mUnable to connect to the database. 
+Retrying (3)...[39m
+TypeORMError: Entity metadata for User#routes 
+was not found. Check if you specified a correct 
+entity object and if it's connected in the 
+connection options.
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:733:23
+    at Array.forEach (<anonymous>)
+    at 
+EntityMetadataBuilder.computeInverseProperties (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\metadata-builder\EntityMetadat
+aBuilder.js:726:34)
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:86:58
+    at Array.forEach (<anonymous>)
+    at EntityMetadataBuilder.build (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\metadata-builder\EntityMetadataBuilder.js:
+86:25)
+    at 
+ConnectionMetadataBuilder.buildEntityMetadatas (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\connection\ConnectionMetadataB
+uilder.js:66:150)
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:103:5)
+    at async DataSource.buildMetadatas (C:\Users\
+ASUS\Documents\github_Projects\lookApp\node_modul
+es\typeorm\data-source\DataSource.js:483:33)
+    at async DataSource.initialize (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\data-source\DataSource.js:145:13)
+[31m[Nest] 26080  - [39m03/18/2026, 10:44:07 
+AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] 
+[39m[31mUnable to connect to the database. 
+Retrying (4)...[39m
+TypeORMError: Entity metadata for User#routes 
+was not found. Check if you specified a correct 
+entity object and if it's connected in the 
+connection options.
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:733:23
+    at Array.forEach (<anonymous>)
+    at 
+EntityMetadataBuilder.computeInverseProperties (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\metadata-builder\EntityMetadat
+aBuilder.js:726:34)
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:86:58
+    at Array.forEach (<anonymous>)
+    at EntityMetadataBuilder.build (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\metadata-builder\EntityMetadataBuilder.js:
+86:25)
+    at 
+ConnectionMetadataBuilder.buildEntityMetadatas (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\connection\ConnectionMetadataB
+uilder.js:66:150)
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:103:5)
+    at async DataSource.buildMetadatas (C:\Users\
+ASUS\Documents\github_Projects\lookApp\node_modul
+es\typeorm\data-source\DataSource.js:483:33)
+    at async DataSource.initialize (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\data-source\DataSource.js:145:13)
+[31m[Nest] 26080  - [39m03/18/2026, 10:44:10 
+AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] 
+[39m[31mUnable to connect to the database. 
+Retrying (5)...[39m
+TypeORMError: Entity metadata for User#routes 
+was not found. Check if you specified a correct 
+entity object and if it's connected in the 
+connection options.
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:733:23
+    at Array.forEach (<anonymous>)
+    at 
+EntityMetadataBuilder.computeInverseProperties (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\metadata-builder\EntityMetadat
+aBuilder.js:726:34)
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:86:58
+    at Array.forEach (<anonymous>)
+    at EntityMetadataBuilder.build (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\metadata-builder\EntityMetadataBuilder.js:
+86:25)
+    at 
+ConnectionMetadataBuilder.buildEntityMetadatas (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\connection\ConnectionMetadataB
+uilder.js:66:150)
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:103:5)
+    at async DataSource.buildMetadatas (C:\Users\
+ASUS\Documents\github_Projects\lookApp\node_modul
+es\typeorm\data-source\DataSource.js:483:33)
+    at async DataSource.initialize (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\data-source\DataSource.js:145:13)
+[31m[Nest] 26080  - [39m03/18/2026, 10:44:13 
+AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] 
+[39m[31mUnable to connect to the database. 
+Retrying (6)...[39m
+TypeORMError: Entity metadata for User#routes 
+was not found. Check if you specified a correct 
+entity object and if it's connected in the 
+connection options.
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:733:23
+    at Array.forEach (<anonymous>)
+    at 
+EntityMetadataBuilder.computeInverseProperties (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\metadata-builder\EntityMetadat
+aBuilder.js:726:34)
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:86:58
+    at Array.forEach (<anonymous>)
+    at EntityMetadataBuilder.build (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\metadata-builder\EntityMetadataBuilder.js:
+86:25)
+    at 
+ConnectionMetadataBuilder.buildEntityMetadatas (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\connection\ConnectionMetadataB
+uilder.js:66:150)
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:103:5)
+    at async DataSource.buildMetadatas (C:\Users\
+ASUS\Documents\github_Projects\lookApp\node_modul
+es\typeorm\data-source\DataSource.js:483:33)
+    at async DataSource.initialize (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\data-source\DataSource.js:145:13)
+[31m[Nest] 26080  - [39m03/18/2026, 10:44:16 
+AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] 
+[39m[31mUnable to connect to the database. 
+Retrying (7)...[39m
+TypeORMError: Entity metadata for User#routes 
+was not found. Check if you specified a correct 
+entity object and if it's connected in the 
+connection options.
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:733:23
+    at Array.forEach (<anonymous>)
+    at 
+EntityMetadataBuilder.computeInverseProperties (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\metadata-builder\EntityMetadat
+aBuilder.js:726:34)
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:86:58
+    at Array.forEach (<anonymous>)
+    at EntityMetadataBuilder.build (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\metadata-builder\EntityMetadataBuilder.js:
+86:25)
+    at 
+ConnectionMetadataBuilder.buildEntityMetadatas (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\connection\ConnectionMetadataB
+uilder.js:66:150)
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:103:5)
+    at async DataSource.buildMetadatas (C:\Users\
+ASUS\Documents\github_Projects\lookApp\node_modul
+es\typeorm\data-source\DataSource.js:483:33)
+    at async DataSource.initialize (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\data-source\DataSource.js:145:13)
+[31m[Nest] 26080  - [39m03/18/2026, 10:44:19 
+AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] 
+[39m[31mUnable to connect to the database. 
+Retrying (8)...[39m
+TypeORMError: Entity metadata for User#routes 
+was not found. Check if you specified a correct 
+entity object and if it's connected in the 
+connection options.
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:733:23
+    at Array.forEach (<anonymous>)
+    at 
+EntityMetadataBuilder.computeInverseProperties (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\metadata-builder\EntityMetadat
+aBuilder.js:726:34)
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:86:58
+    at Array.forEach (<anonymous>)
+    at EntityMetadataBuilder.build (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\metadata-builder\EntityMetadataBuilder.js:
+86:25)
+    at 
+ConnectionMetadataBuilder.buildEntityMetadatas (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\connection\ConnectionMetadataB
+uilder.js:66:150)
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:103:5)
+    at async DataSource.buildMetadatas (C:\Users\
+ASUS\Documents\github_Projects\lookApp\node_modul
+es\typeorm\data-source\DataSource.js:483:33)
+    at async DataSource.initialize (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\data-source\DataSource.js:145:13)
+[31m[Nest] 26080  - [39m03/18/2026, 10:44:22 
+AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] 
+[39m[31mUnable to connect to the database. 
+Retrying (9)...[39m
+TypeORMError: Entity metadata for User#routes 
+was not found. Check if you specified a correct 
+entity object and if it's connected in the 
+connection options.
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:733:23
+    at Array.forEach (<anonymous>)
+    at 
+EntityMetadataBuilder.computeInverseProperties (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\metadata-builder\EntityMetadat
+aBuilder.js:726:34)
+    at C:\Users\ASUS\Documents\github_Projects\lo
+okApp\node_modules\typeorm\metadata-builder\Entit
+yMetadataBuilder.js:86:58
+    at Array.forEach (<anonymous>)
+    at EntityMetadataBuilder.build (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\metadata-builder\EntityMetadataBuilder.js:
+86:25)
+    at 
+ConnectionMetadataBuilder.buildEntityMetadatas (C
+:\Users\ASUS\Documents\github_Projects\lookApp\no
+de_modules\typeorm\connection\ConnectionMetadataB
+uilder.js:66:150)
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:103:5)
+    at async DataSource.buildMetadatas (C:\Users\
+ASUS\Documents\github_Projects\lookApp\node_modul
+es\typeorm\data-source\DataSource.js:483:33)
+    at async DataSource.initialize (C:\Users\ASUS
+\Documents\github_Projects\lookApp\node_modules\t
+ypeorm\data-source\DataSource.js:145:13)
+[31m[Nest] 26080  - [39m03/18/2026, 10:44:22 
+AM [31m  ERROR[39m [38;5;3m[ExceptionHandler] 
+[39mTypeORMError: Entity metadata for 
+User#routes was not found. Check if you 
+specified a correct entity object and if it's 
+connected in the connection options.
+    at [90mC:\Users\ASUS\Documents\github_Projec
+ts\lookApp\[39mnode_modules\[4mtypeorm[24m\met
+adata-builder\EntityMetadataBuilder.js:733:23
+    at Array.forEach (<anonymous>)
+    at 
+EntityMetadataBuilder.computeInverseProperties [
+90m(C:\Users\ASUS\Documents\github_Projects\lookA
+pp\[39mnode_modules\[4mtypeorm[24m\metadata-bu
+ilder\EntityMetadataBuilder.js:726:34[90m)[39m
+    at [90mC:\Users\ASUS\Documents\github_Projec
+ts\lookApp\[39mnode_modules\[4mtypeorm[24m\met
+adata-builder\EntityMetadataBuilder.js:86:58
+    at Array.forEach (<anonymous>)
+    at EntityMetadataBuilder.build [90m(C:\Users
+\ASUS\Documents\github_Projects\lookApp\[39mnode
+_modules\[4mtypeorm[24m\metadata-builder\Entity
+MetadataBuilder.js:86:25[90m)[39m
+    at 
+ConnectionMetadataBuilder.buildEntityMetadatas [
+90m(C:\Users\ASUS\Documents\github_Projects\lookA
+pp\[39mnode_modules\[4mtypeorm[24m\connection\
+ConnectionMetadataBuilder.js:66:150[90m)[39m
+[90m    at process.processTicksAndRejections 
+(node:internal/process/task_queues:103:5)[39m
+    at async DataSource.buildMetadatas [90m(C:\U
+sers\ASUS\Documents\github_Projects\lookApp\[39m
+node_modules\[4mtypeorm[24m\data-source\DataSou
+rce.js:483:33[90m)[39m
+    at async DataSource.initialize [90m(C:\Users
+\ASUS\Documents\github_Projects\lookApp\[39mnode
+_modules\[4mtypeorm[24m\data-source\DataSource.
+js:145:13[90m)[39m

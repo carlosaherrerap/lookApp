@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Image } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Theme } from '../constants/theme';
 
-const API_URL = 'http://192.168.1.XX:3009'; // El puerto en .env es 3009
+const API_URL = 'http://192.168.1.55:3009'; // Nueva IP descubierta
 
-export const LoginScreen = ({ onLoginSuccess }) => {
+export const LoginScreen = ({ onLoginSuccess }: { onLoginSuccess: (user: any) => void }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,10 +19,11 @@ export const LoginScreen = ({ onLoginSuccess }) => {
 
     setLoading(true);
     try {
-      // Reemplazar XX con la IP de tu PC en la red local
       const response = await axios.post(`${API_URL}/auth/login`, {
         email,
         password,
+      }, { 
+        timeout: 15000 
       });
 
       const { access_token, user } = response.data;
@@ -74,9 +76,9 @@ export const LoginScreen = ({ onLoginSuccess }) => {
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#0f172a" />
+          <ActivityIndicator color={Theme.colors.background} />
         ) : (
-          <Text style={styles.buttonText}>INICIAR SESION</Text>
+          <Text style={styles.buttonText}>INICIAR SESIÓN</Text>
         )}
       </TouchableOpacity>
     </View>
@@ -88,50 +90,54 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 30,
-    backgroundColor: '#0f172a',
+    backgroundColor: Theme.colors.background,
   },
   logoContainer: {
     alignItems: 'center',
     marginBottom: 20,
   },
   logo: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    borderWidth: 4,
+    borderColor: Theme.colors.primary,
   },
   title: {
-    fontSize: 36,
-    fontWeight: '800',
-    color: '#38bdf8',
+    fontSize: 42,
+    fontWeight: '900',
+    color: Theme.colors.primary,
     textAlign: 'center',
     marginBottom: 40,
-    letterSpacing: 1,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   input: {
-    backgroundColor: '#1e293b',
-    color: '#fff',
+    backgroundColor: Theme.colors.surface,
+    color: Theme.colors.text,
     padding: 18,
-    borderRadius: 12,
+    borderRadius: 16,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: Theme.colors.border,
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#38bdf8',
-    padding: 18,
-    borderRadius: 12,
+    backgroundColor: Theme.colors.primary,
+    padding: 20,
+    borderRadius: 16,
     alignItems: 'center',
     marginTop: 20,
-    shadowColor: '#38bdf8',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowColor: Theme.colors.primary,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.4,
+    shadowRadius: 15,
+    elevation: 10,
   },
   buttonText: {
-    color: '#0f172a',
+    color: Theme.colors.background,
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: '900',
+    letterSpacing: 1,
   },
 });

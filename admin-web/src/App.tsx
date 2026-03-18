@@ -1,11 +1,22 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './pages/Dashboard';
 import { WorkersPage } from './pages/WorkersPage';
 import { RoutesPage } from './pages/RoutesPage';
+import { LoginPage } from './pages/LoginPage';
+import { useState } from 'react';
 import './index.css';
 
 function App() {
+  const [token, setToken] = useState<string | null>(localStorage.getItem('admin_token'));
+
+  if (!token) {
+    return <LoginPage onLogin={(t: string) => {
+      localStorage.setItem('admin_token', t);
+      setToken(t);
+    }} />;
+  }
+
   return (
     <Router>
       <div className="app-container">
@@ -15,6 +26,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/workers" element={<WorkersPage />} />
             <Route path="/routes" element={<RoutesPage />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
       </div>

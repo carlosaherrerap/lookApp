@@ -1,15 +1,17 @@
 export const Theme = {
   colors: {
-    primary: '#38bdf8',
-    secondary: '#0ea5e9',
-    background: '#0f172a',
-    surface: '#1e293b',
-    border: '#334155',
-    text: '#ffffff',
-    textMuted: '#94a3b8',
-    success: '#10b981',
-    error: '#ef4444',
-    warning: '#f59e0b',
+    primary: '#C0F11C', // InDrive Lime Green
+    secondary: '#1A1A1A', 
+    background: '#080000', // InDrive Diesel (Dark)
+    surface: '#121212',
+    surfaceLight: '#1F1F1F',
+    border: '#262626',
+    text: '#FFFFFF',
+    textMuted: '#A0A0A0',
+    success: '#C0F11C',
+    error: '#FF3B30',
+    danger: '#FF3B30',
+    warning: '#FFCC00',
   },
   spacing: {
     xs: 4,

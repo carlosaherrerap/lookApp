@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Route } from '../../routes/entities/route.entity';
 
 @Entity('clients')
@@ -11,6 +11,9 @@ export class Client {
 
   @Column({ type: 'text', nullable: true })
   address: string;
+
+  @Column({ type: 'text', nullable: true })
+  description: string;
 
   @Column({
     type: 'geography',
@@ -25,12 +28,16 @@ export class Client {
 
   @Column({
     type: 'enum',
-    enum: ['pending', 'visited', 'absent', 'other'],
-    default: 'pending',
+    enum: ['pendiente', 'visitado', 'ausente', 'abandonado', 'otro'],
+    default: 'pendiente',
   })
   status: string;
 
+  @Column({ type: 'jsonb', nullable: true })
+  collected_data: any;
+
   @ManyToOne(() => Route, (route) => route.clients, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'route_id' })
   route: Route;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })

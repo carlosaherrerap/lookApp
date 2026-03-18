@@ -30,8 +30,8 @@ export const Sidebar: React.FC = () => {
 
       <div style={{ marginTop: 'auto' }}>
         <button className="nav-item" style={{ background: 'transparent', border: 'none', width: '100%', cursor: 'pointer' }}>
-          <LogOut size={20} color="#ef4444" />
-          <span style={{ color: '#ef4444' }}>Cerrar Sesión</span>
+          <LogOut size={20} color="var(--danger-color)" />
+          <span style={{ color: 'var(--danger-color)' }}>Cerrar Sesión</span>
         </button>
       </div>
     </aside>

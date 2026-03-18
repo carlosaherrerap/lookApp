@@ -45,11 +45,17 @@ export default function App() {
     );
   }
 
+  const logout = async () => {
+    await AsyncStorage.removeItem('user_token');
+    await AsyncStorage.removeItem('user_data');
+    setUser(null);
+  };
+
   return (
     <NavigationContainer>
       <View style={{ flex: 1, backgroundColor: '#0f172a' }}>
         <StatusBar barStyle="light-content" />
-        <AppNavigator user={user} />
+        <AppNavigator user={user} onLogout={logout} />
       </View>
     </NavigationContainer>
   );

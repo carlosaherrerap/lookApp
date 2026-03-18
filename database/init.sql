@@ -18,7 +18,7 @@ CREATE TABLE routes (
     worker_id INTEGER REFERENCES users(id),
     name VARCHAR(255),
     assigned_date DATE NOT NULL,
-    status VARCHAR(50) DEFAULT 'planned' CHECK (status IN ('planned', 'in_progress', 'completed')),
+    status VARCHAR(50) DEFAULT 'planeado' CHECK (status IN ('planeado', 'en_progreso', 'completado')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -29,9 +29,11 @@ CREATE TABLE clients (
     route_id INTEGER REFERENCES routes(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     address TEXT,
+    description TEXT,
     location GEOGRAPHY(POINT, 4326), -- PostGIS point (lat, lng)
     visit_order INTEGER,
-    status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'visited', 'absent', 'other')),
+    status VARCHAR(50) DEFAULT 'pendiente' CHECK (status IN ('pendiente', 'visitado', 'ausente', 'abandonado', 'otro')),
+    collected_data JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -43,7 +45,7 @@ CREATE TABLE visit_reports (
     data JSONB, -- Contenido dinámico del reporte
     event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL, -- Cuándo ocurrió en el móvil
     server_timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, -- Cuándo llegó al servidor
-    sync_status VARCHAR(50) DEFAULT 'synced',
+    sync_status VARCHAR(50) DEFAULT 'sincronizado' CHECK (sync_status IN ('pendiente', 'sincronizando', 'sincronizado')),
     location_at_report GEOGRAPHY(POINT, 4326) -- Ubicación exacta al reportar
 );
 
@@ -70,3 +72,10 @@ CREATE TABLE tracking_history (
 CREATE INDEX idx_clients_location ON clients USING GIST (location);
 CREATE INDEX idx_tracking_location ON tracking_history USING GIST (location);
 CREATE INDEX idx_reports_event_time ON visit_reports (event_timestamp);
+
+-- Usuarios iniciales (password: password123)
+INSERT INTO users (email, password_hash, name, role) 
+VALUES ('admin@mapx.com', '$2b$10$KoICtsDKrkfaHPf4vuP/3eYVeYJa9x0FVM/zNLpJz8AAeUSrHGU75i', 'Admin MapX', 'admin');
+
+INSERT INTO users (email, password_hash, name, role) 
+VALUES ('worker@mapx.com', '$2b$10$KoICtsDKrkfaHPf4vuP/3eYVeYJa9x0FVM/zNLpJz8AAeUSrHGU75i', 'Juan Trabajador', 'worker');

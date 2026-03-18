@@ -61,7 +61,7 @@ export const ReportVisitScreen = ({ route, navigation }) => {
       />
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Guardar Reporte</Text>
+        <Text style={styles.submitButtonText}>FINALIZAR REPORTE</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   submitButtonText: {
-    color: Theme.colors.text,
+    color: Theme.colors.background,
     fontSize: 18,
     fontWeight: 'bold',
   }
