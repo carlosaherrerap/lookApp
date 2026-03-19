@@ -28,6 +28,7 @@ export const initSyncDatabase = async () => {
       route_id INTEGER,
       name TEXT,
       address TEXT,
+      description TEXT,
       lat REAL,
       lng REAL,
       visit_order INTEGER,

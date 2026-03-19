@@ -1,27 +1,49 @@
-import React, { useRef, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import React, { useRef, useEffect, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import MapView, { Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Theme } from '../constants/theme';
 import { CustomMarker } from '../components/CustomMarker';
 import { ChevronLeft } from 'lucide-react-native';
+import { RoutingService, RouteGeometry } from '../services/RoutingService';
 
 export const RouteMapScreen = ({ route, navigation }: any) => {
   const { clients, routeId } = route.params;
   const mapRef = useRef<MapView>(null);
+  const [routePath, setRoutePath] = useState<RouteGeometry[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const coordinates = clients.map((c: any) => ({
-    latitude: c.lat,
-    longitude: c.lng,
+  const waypoints = clients.map((c: any) => ({
+    lat: c.lat,
+    lng: c.lng,
   }));
 
+  const fetchRoute = async () => {
+    setLoading(true);
+    try {
+      const path = await RoutingService.getRouteGeometry(waypoints);
+      setRoutePath(path);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (coordinates.length > 0 && mapRef.current) {
-      mapRef.current.fitToCoordinates(coordinates, {
+    fetchRoute();
+  }, []);
+
+  useEffect(() => {
+    if (waypoints.length > 0 && mapRef.current) {
+      // Priorizar el fit a la ruta trazada si existe, sino a los puntos
+      const coords = routePath.length > 0 
+        ? routePath 
+        : waypoints.map((w: any) => ({ latitude: w.lat, longitude: w.lng }));
+
+      mapRef.current.fitToCoordinates(coords, {
         edgePadding: { top: 100, right: 50, bottom: 50, left: 50 },
         animated: true,
       });
     }
-  }, []);
+  }, [routePath, waypoints]);
 
   return (
     <View style={styles.container}>
@@ -30,13 +52,20 @@ export const RouteMapScreen = ({ route, navigation }: any) => {
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={{
-          latitude: coordinates[0]?.latitude || 0,
-          longitude: coordinates[0]?.longitude || 0,
+          latitude: waypoints[0]?.lat || 0,
+          longitude: waypoints[0]?.lng || 0,
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}
         customMapStyle={mapStyle}
       >
+        <Polyline
+          coordinates={routePath}
+          strokeColor={Theme.colors.primary}
+          strokeWidth={4}
+          lineDashPattern={[0]}
+        />
+
         {clients.map((client: any, index: number) => (
           <CustomMarker
             key={client.id}
@@ -46,13 +75,6 @@ export const RouteMapScreen = ({ route, navigation }: any) => {
             status={client.status}
           />
         ))}
-
-        <Polyline
-          coordinates={coordinates}
-          strokeColor={Theme.colors.primary}
-          strokeWidth={4}
-          lineDashPattern={[0]}
-        />
       </MapView>
 
       <TouchableOpacity 
@@ -62,9 +84,18 @@ export const RouteMapScreen = ({ route, navigation }: any) => {
         <ChevronLeft size={24} color={Theme.colors.text} />
       </TouchableOpacity>
 
-      <View style={styles.infoBadge}>
-        <Text style={styles.infoText}>Ruta #{routeId} • {clients.length} Puntos</Text>
-      </View>
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={Theme.colors.primary} />
+          <Text style={styles.loadingText}>Trazando ruta por calles...</Text>
+        </View>
+      )}
+
+      {!loading && (
+        <View style={styles.infoBadge}>
+          <Text style={styles.infoText}>Ruta #{routeId} • {clients.length} Puntos</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -93,6 +124,18 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     elevation: 5,
+    zIndex: 10,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: Theme.colors.primary,
+    marginTop: 10,
+    fontWeight: 'bold',
   },
   infoBadge: {
     position: 'absolute',

@@ -27,6 +27,8 @@ interface NewClient {
   lat: number;
   lng: number;
   name: string;
+  address: string;
+  description: string;
 }
 
 const RoutingControl = ({ clients }: { clients: NewClient[] }) => {
@@ -125,6 +127,8 @@ export const CreateRouteModal: React.FC<CreateRouteProps> = ({ onClose, onSucces
         const mappedClients = initialRoute.clients.map((c: any) => ({
           id: c.id,
           name: c.name,
+          address: c.address || '',
+          description: c.description || '',
           lat: c.location.coordinates[1],
           lng: c.location.coordinates[0]
         }));
@@ -134,17 +138,23 @@ export const CreateRouteModal: React.FC<CreateRouteProps> = ({ onClose, onSucces
   }, [initialRoute]);
 
   const handleAddClient = (lat: number, lng: number) => {
-    setClients(prev => [...prev, { lat, lng, name: `Destino ${prev.length + 1}` }]);
+    setClients(prev => [...prev, { 
+      lat, 
+      lng, 
+      name: `Destino ${prev.length + 1}`,
+      address: `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`,
+      description: ''
+    }]);
   };
 
   const handleRemoveClient = (index: number) => {
     setClients(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleUpdateClientName = (index: number, newName: string) => {
+  const handleUpdateClient = (index: number, field: keyof NewClient, value: string) => {
     setClients(prev => {
       const newClients = [...prev];
-      newClients[index] = { ...newClients[index], name: newName };
+      newClients[index] = { ...newClients[index], [field]: value };
       return newClients;
     });
   };
@@ -162,9 +172,10 @@ export const CreateRouteModal: React.FC<CreateRouteProps> = ({ onClose, onSucces
         assigned_date: initialRoute?.assigned_date || new Date().toISOString().split('T')[0],
         worker: { id: parseInt(workerId) },
         clients: clients.map((c, i) => ({
-          id: c.id, // Importante para persistir existentes
+          id: c.id,
           name: c.name,
-          address: `Lat: ${c.lat.toFixed(4)}, Lng: ${c.lng.toFixed(4)}`,
+          address: c.address,
+          description: c.description,
           location: { type: 'Point', coordinates: [c.lng, c.lat] },
           visit_order: i + 1
         }))
@@ -227,9 +238,22 @@ export const CreateRouteModal: React.FC<CreateRouteProps> = ({ onClose, onSucces
                   <input 
                     type="text" 
                     value={c.name} 
-                    onChange={e => handleUpdateClientName(idx, e.target.value)} 
-                    placeholder="Nombre del punto"
+                    onChange={e => handleUpdateClient(idx, 'name', e.target.value)} 
+                    placeholder="Nombre del Cliente"
                     style={{ width: '100%', padding: '0.4rem', background: 'rgba(0,0,0,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFFFF', borderRadius: '4px', fontSize: '0.85rem' }}
+                  />
+                  <input 
+                    type="text" 
+                    value={c.address} 
+                    onChange={e => handleUpdateClient(idx, 'address', e.target.value)} 
+                    placeholder="Dirección Exacta"
+                    style={{ width: '100%', padding: '0.4rem', background: 'rgba(0,0,0,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFFFF', borderRadius: '4px', fontSize: '0.82rem' }}
+                  />
+                  <textarea
+                    value={c.description} 
+                    onChange={e => handleUpdateClient(idx, 'description', e.target.value)} 
+                    placeholder="Referencias / Notas adicionales"
+                    style={{ width: '100%', padding: '0.4rem', background: 'rgba(0,0,0,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFFFF', borderRadius: '4px', fontSize: '0.8rem', resize: 'none', height: '40px' }}
                   />
                 </div>
               ))}

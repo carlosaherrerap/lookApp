@@ -5,6 +5,7 @@ import { Theme } from '../constants/theme';
 import * as Location from 'expo-location';
 import { Navigation, ClipboardList, XOctagon, ChevronLeft } from 'lucide-react-native';
 import { CustomMarker } from '../components/CustomMarker';
+import { RoutingService, RouteGeometry } from '../services/RoutingService';
 
 export const ClientVisitScreen = ({ route, navigation }: any) => {
   const { client } = route.params;
@@ -12,20 +13,40 @@ export const ClientVisitScreen = ({ route, navigation }: any) => {
   const [abandonModalVisible, setAbandonModalVisible] = useState(false);
   const [abandonReason, setAbandonReason] = useState('');
   const [showFullMap, setShowFullMap] = useState(false);
+  const [navigationPath, setNavigationPath] = useState<RouteGeometry[]>([]);
+
+  const clientCoords = {
+    latitude: client.location?.coordinates ? client.location.coordinates[1] : (client.lat || 0),
+    longitude: client.location?.coordinates ? client.location.coordinates[0] : (client.lng || 0),
+  };
+
+  const fetchNavigationPath = async (coords: { latitude: number, longitude: number }) => {
+    try {
+      const path = await RoutingService.getRouteGeometry([
+        { lat: coords.latitude, lng: coords.longitude },
+        { lat: clientCoords.latitude, lng: clientCoords.longitude }
+      ]);
+      setNavigationPath(path);
+    } catch (error) {
+      console.error('Error fetching navigation path:', error);
+    }
+  };
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') return;
       
-      // Obtener ubicación inicial
       let location = await Location.getCurrentPositionAsync({});
       setCurrentLocation(location.coords);
+      fetchNavigationPath(location.coords);
 
-      // Suscribirse a cambios de ubicación para navegación en tiempo real
       const subscription = await Location.watchPositionAsync(
-        { accuracy: Location.Accuracy.High, distanceInterval: 5 },
-        (loc) => setCurrentLocation(loc.coords)
+        { accuracy: Location.Accuracy.High, distanceInterval: 10 },
+        (loc) => {
+          setCurrentLocation(loc.coords);
+          fetchNavigationPath(loc.coords);
+        }
       );
 
       return () => subscription.remove();
@@ -38,16 +59,6 @@ export const ClientVisitScreen = ({ route, navigation }: any) => {
     setAbandonModalVisible(false);
     navigation.goBack();
   };
-
-  const clientCoords = {
-    latitude: client.location?.coordinates ? client.location.coordinates[1] : (client.lat || 0),
-    longitude: client.location?.coordinates ? client.location.coordinates[0] : (client.lng || 0),
-  };
-
-  const navigationPath = currentLocation ? [
-    { latitude: currentLocation.latitude, longitude: currentLocation.longitude },
-    clientCoords
-  ] : [];
 
   return (
     <View style={styles.container}>
@@ -65,19 +76,18 @@ export const ClientVisitScreen = ({ route, navigation }: any) => {
           showsMyLocationButton={true}
           customMapStyle={mapStyle}
         >
+          {navigationPath.length > 0 && (
+            <Polyline
+              coordinates={navigationPath}
+              strokeColor="#38bdf8"
+              strokeWidth={4}
+            />
+          )}
+
           <CustomMarker 
             coordinate={clientCoords} 
             title={client.name}
           />
-
-          {currentLocation && (
-            <Polyline
-              coordinates={navigationPath}
-              strokeColor="#38bdf8" // Azul navegación
-              strokeWidth={4}
-              lineDashPattern={[0]}
-            />
-          )}
         </MapView>
         
         <TouchableOpacity style={styles.backFab} onPress={() => navigation.goBack()}>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Theme } from '../constants/theme';
-import * as SQLite from 'expo-sqlite';
 import { Map, ChevronRight, CheckCircle2 } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { getDatabase } from '../database/db';
 
 export const ClientDetailScreen = ({ route, navigation }: any) => {
   const { routeId } = route.params;
@@ -12,7 +12,7 @@ export const ClientDetailScreen = ({ route, navigation }: any) => {
 
   const fetchClients = useCallback(async () => {
     try {
-      const db = await SQLite.openDatabaseAsync('lookapp_offline.db');
+      const db = await getDatabase();
       const localClients: any[] = await db.getAllAsync(
         'SELECT * FROM local_clients WHERE route_id = ? ORDER BY visit_order',
         [routeId]

@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 export interface RouteGeometry {
-  coordinates: [number, number][];
+  latitude: number;
+  longitude: number;
 }
 
 export class RoutingService {
@@ -12,7 +13,7 @@ export class RoutingService {
    * Obtiene la geometría de la ruta que une varios puntos siguiendo las calles.
    * @param waypoints Lista de {lat, lng}
    */
-  static async getRouteGeometry(waypoints: { lat: number, lng: number }[]): Promise<[number, number][]> {
+  static async getRouteGeometry(waypoints: { lat: number, lng: number }[]): Promise<RouteGeometry[]> {
     if (waypoints.length < 2) return [];
 
     try {

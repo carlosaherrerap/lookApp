@@ -12,9 +12,11 @@ interface SyncItem {
   status: string;
 }
 
+import { getDatabase } from '../database/db';
+
 export class SyncService {
   static async queueReport(type: 'visit_report' | 'time_log' | 'tracking', payload: any) {
-    const db = await SQLite.openDatabaseAsync('lookapp_offline.db');
+    const db = await getDatabase();
     const timestamp = new Date().toISOString();
     
     await db.runAsync(
@@ -26,7 +28,7 @@ export class SyncService {
   }
 
   static async syncAll() {
-    const db = await SQLite.openDatabaseAsync('lookapp_offline.db');
+    const db = await getDatabase();
     const pendingItems = await db.getAllAsync<SyncItem>('SELECT * FROM sync_queue WHERE status = "pending"');
 
     if (pendingItems.length === 0) return;

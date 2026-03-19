@@ -21,7 +21,12 @@ export const CustomMarker: React.FC<CustomMarkerProps> = ({ coordinate, title, o
   if (isAbandoned) bgColor = Theme.colors.error; // #FF5252
 
   return (
-    <Marker coordinate={coordinate} onPress={onPress} tracksViewChanges={false}>
+    <Marker 
+      coordinate={coordinate} 
+      onPress={onPress} 
+      tracksViewChanges={true}
+      zIndex={100}
+    >
       <View style={styles.container}>
         <View style={[styles.pin, { backgroundColor: bgColor }]}>
           {order !== undefined ? (

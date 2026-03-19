@@ -3,6 +3,7 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, 
 import { Theme } from '../constants/theme';
 import axios from 'axios';
 import * as SQLite from 'expo-sqlite';
+import { getDatabase } from '../database/db';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { io } from 'socket.io-client';
 
@@ -51,7 +52,7 @@ export const RoutesScreen = ({ user, navigation, onLogout }: { user: any, naviga
       setRoutes(remoteRoutes);
 
       // 2. Cachear en SQLite local para uso offline
-      const db = await SQLite.openDatabaseAsync('lookapp_offline.db');
+      const db = await getDatabase();
       
       try {
         await db.runAsync('DELETE FROM local_routes');
@@ -69,8 +70,8 @@ export const RoutesScreen = ({ user, navigation, onLogout }: { user: any, naviga
               const lng = client.location?.coordinates ? client.location.coordinates[0] : 0;
               
               await db.runAsync(
-                'INSERT INTO local_clients (id, route_id, name, address, lat, lng, visit_order, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [client.id, route.id, client.name, client.address, lat, lng, client.visit_order || 0, client.status || 'pendiente']
+                'INSERT INTO local_clients (id, route_id, name, address, description, lat, lng, visit_order, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [client.id, route.id, client.name, client.address, client.description || '', lat, lng, client.visit_order || 0, client.status || 'pendiente']
               );
             }
           }
@@ -89,7 +90,7 @@ export const RoutesScreen = ({ user, navigation, onLogout }: { user: any, naviga
       }
 
       // 3. Fallback a DB local si no hay internet o hay otro error
-      const db = await SQLite.openDatabaseAsync('lookapp_offline.db');
+      const db = await getDatabase();
       const localRoutes = await db.getAllAsync('SELECT * FROM local_routes');
       setRoutes(localRoutes as any[]);
     } finally {
