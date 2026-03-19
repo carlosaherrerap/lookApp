@@ -11,8 +11,9 @@ function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('admin_token'));
 
   if (!token) {
-    return <LoginPage onLogin={(t: string) => {
+    return <LoginPage onLogin={(t: string, userData: any) => {
       localStorage.setItem('admin_token', t);
+      localStorage.setItem('user_data', JSON.stringify(userData));
       setToken(t);
     }} />;
   }

@@ -20,14 +20,14 @@ let EventsGateway = class EventsGateway {
     handleDisconnect(client) {
         console.log(`Client disconnected: ${client.id}`);
     }
-    async identity(client, data) {
-        return data;
-    }
-    emitTrackingUpdate(data) {
-        this.server.emit('tracking_update', data);
+    notifyRouteUpdate(workerId, data) {
+        this.server.emit(`route_updated_${workerId}`, data);
     }
     emitReportUpdate(data) {
-        this.server.emit('report_update', data);
+        this.server.emit('report_updated', data);
+    }
+    emitTrackingUpdate(data) {
+        this.server.emit('tracking_updated', data);
     }
 };
 exports.EventsGateway = EventsGateway;
@@ -35,12 +35,6 @@ __decorate([
     (0, websockets_1.WebSocketServer)(),
     __metadata("design:type", socket_io_1.Server)
 ], EventsGateway.prototype, "server", void 0);
-__decorate([
-    (0, websockets_1.SubscribeMessage)('identity'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [socket_io_1.Socket, Number]),
-    __metadata("design:returntype", Promise)
-], EventsGateway.prototype, "identity", null);
 exports.EventsGateway = EventsGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({
         cors: {

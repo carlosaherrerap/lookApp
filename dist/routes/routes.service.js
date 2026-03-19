@@ -17,14 +17,28 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const route_entity_1 = require("./entities/route.entity");
+const events_gateway_1 = require("../events/events.gateway");
 let RoutesService = class RoutesService {
     routesRepository;
-    constructor(routesRepository) {
+    eventsGateway;
+    constructor(routesRepository, eventsGateway) {
         this.routesRepository = routesRepository;
+        this.eventsGateway = eventsGateway;
     }
     async create(createRouteDto) {
-        const newRoute = this.routesRepository.create(createRouteDto);
-        return this.routesRepository.save(newRoute);
+        return await this.routesRepository.manager.transaction(async (manager) => {
+            const { clients, ...routeData } = createRouteDto;
+            const route = manager.create(route_entity_1.Route, routeData);
+            const savedRoute = await manager.save(route_entity_1.Route, route);
+            if (clients && clients.length > 0) {
+                const clientEntities = clients.map((c) => manager.create('clients', { ...c, route: savedRoute }));
+                await manager.save('clients', clientEntities);
+            }
+            if (savedRoute.worker?.id) {
+                this.eventsGateway.notifyRouteUpdate(savedRoute.worker.id, { type: 'create', routeId: savedRoute.id });
+            }
+            return this.findOne(savedRoute.id);
+        });
     }
     async findAll() {
         return this.routesRepository.find({
@@ -39,11 +53,42 @@ let RoutesService = class RoutesService {
         });
     }
     async update(id, updateData) {
-        const route = await this.findOne(id);
-        if (!route)
-            throw new Error('Ruta no encontrada');
-        const updatedRoute = this.routesRepository.merge(route, updateData);
-        return this.routesRepository.save(updatedRoute);
+        return await this.routesRepository.manager.transaction(async (manager) => {
+            const route = await manager.findOne(route_entity_1.Route, {
+                where: { id },
+                relations: ['worker', 'clients'],
+            });
+            if (!route)
+                throw new Error('Ruta no encontrada');
+            const { clients: inputClients, ...routeFields } = updateData;
+            if (inputClients) {
+                const inputClientIds = inputClients
+                    .filter((c) => c.id)
+                    .map((c) => Number(c.id));
+                const clientsToDeleteResource = route.clients
+                    .filter(c => !inputClientIds.includes(Number(c.id)))
+                    .map(c => c.id);
+                if (clientsToDeleteResource.length > 0) {
+                    await manager.delete('clients', clientsToDeleteResource);
+                }
+                const clientPromises = inputClients.map((c) => {
+                    if (c.id) {
+                        return manager.update('clients', c.id, { ...c, route: route });
+                    }
+                    else {
+                        const newClient = manager.create('clients', { ...c, route: route });
+                        return manager.save('clients', newClient);
+                    }
+                });
+                await Promise.all(clientPromises);
+            }
+            manager.merge(route_entity_1.Route, route, routeFields);
+            const saved = await manager.save(route_entity_1.Route, route);
+            if (saved.worker?.id) {
+                this.eventsGateway.notifyRouteUpdate(saved.worker.id, { type: 'update', routeId: saved.id });
+            }
+            return this.findOne(saved.id);
+        });
     }
     async findByWorker(workerId) {
         return this.routesRepository.find({
@@ -57,6 +102,7 @@ exports.RoutesService = RoutesService;
 exports.RoutesService = RoutesService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(route_entity_1.Route)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        events_gateway_1.EventsGateway])
 ], RoutesService);
 //# sourceMappingURL=routes.service.js.map

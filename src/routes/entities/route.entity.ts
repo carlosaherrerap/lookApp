@@ -24,7 +24,7 @@ export class Route {
   @JoinColumn({ name: 'worker_id' })
   worker: User;
 
-  @OneToMany(() => Client, (client) => client.route, { cascade: true })
+  @OneToMany(() => Client, (client) => client.route)
   clients: Client[];
 
   @CreateDateColumn({ type: 'timestamp with time zone' })

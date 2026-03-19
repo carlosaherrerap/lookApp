@@ -24,16 +24,15 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('identity')
-  async identity(client: Socket, data: number): Promise<number> {
-    return data;
-  }
-
-  emitTrackingUpdate(data: any) {
-    this.server.emit('tracking_update', data);
+  notifyRouteUpdate(workerId: number, data: any) {
+    this.server.emit(`route_updated_${workerId}`, data);
   }
 
   emitReportUpdate(data: any) {
-    this.server.emit('report_update', data);
+    this.server.emit('report_updated', data);
+  }
+
+  emitTrackingUpdate(data: any) {
+    this.server.emit('tracking_updated', data);
   }
 }

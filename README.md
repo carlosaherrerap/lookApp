@@ -100,7 +100,39 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 ### CREDENCIALES
 Email: worker@mapx.com
 Contraseña: password123
-
+---------------------------------------------
+DB_CONFIG = {
+'server': '192.168.1.42,1433',
+'database': 'Moviles',
+'user': 'sa',
+'password': r'Administrador2025$$', # Usamos r'' para evitar problemas con caracteres especiales
+'table': 'Base.Bitel',
+'columns': 'PERIODO,DOCUMENTO,TELEFONO,TITULAR,PLAN,FECHA,DEPARTAMENTO,PROVINCIA,DISTRITO',
+'id_column': 'PERIODO',
+'batch_min': 50,
+'batch_max': 250,
+'sleep_min': 3,
+'sleep_max': 7
+}
+CHECKPOINT_FILE = 'checkpoint.json'
+OUTPUT_FILE = 'output_2.txt'
+---------------------------------------------
+DB_CONFIG = {
+'server': '192.168.1.41,1433',
+'database': 'SUNAT',
+'user': 'sa',
+'password': r'Informa2025$$', # Usamos r'' para evitar problemas con caracteres especiales
+'table': 'Sunat.PadronReducido',
+'columns': 'padron_id, RUC, NOMBRE_O_RAZON_SOCIAL, ESTADO_DEL_CONTRIBUYENTE, CONDICION_DE_DOMICILIO, UBIGEO, TIPO_DE_VIA, NOMBRE_VIA, CODIGO_DE_ZONA, TIPO_DE_ZONA, NUMERO, INTERIOR, LOTE, DEPARTAMENTO, MANZANA, KILOMETRO, FECHA_PERIODO',
+'id_column': 'padron_id',
+'batch_min': 50,
+'batch_max': 200,
+'sleep_min': 3,
+'sleep_max': 7
+}
+CHECKPOINT_FILE = 'checkpoint_sunat.json'
+OUTPUT_FILE = 'output_sunat.txt'
+-----------------------------------------------
 
 Email: admin@mapx.com
 Contraseña: password123

@@ -4,7 +4,7 @@ export declare class EventsGateway implements OnGatewayConnection, OnGatewayDisc
     server: Server;
     handleConnection(client: Socket): void;
     handleDisconnect(client: Socket): void;
-    identity(client: Socket, data: number): Promise<number>;
-    emitTrackingUpdate(data: any): void;
+    notifyRouteUpdate(workerId: number, data: any): void;
     emitReportUpdate(data: any): void;
+    emitTrackingUpdate(data: any): void;
 }

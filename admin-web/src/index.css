@@ -86,8 +86,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  border-right: 1px solid var(--surface-border);
-  background: #FFFFFF;
+  border-right: none;
+  background: var(--primary-color);
+  color: #FFFFFF;
   z-index: 10;
 }
 
@@ -109,20 +110,20 @@ body {
   gap: 1rem;
   padding: 1rem 1.25rem;
   border-radius: 12px;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
   font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-item:hover {
-  color: var(--text-main);
-  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-item.active {
-  color: var(--primary-color);
-  background: rgba(14, 198, 101, 0.1);
+  color: #FFFFFF;
+  background: rgba(0, 0, 0, 0.1);
   font-weight: 700;
 }
 

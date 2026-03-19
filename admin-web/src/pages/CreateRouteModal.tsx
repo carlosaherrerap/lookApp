@@ -31,39 +31,59 @@ interface NewClient {
 
 const RoutingControl = ({ clients }: { clients: NewClient[] }) => {
   const map = useMap();
+  const routingControlRef = React.useRef<any>(null);
 
   useEffect(() => {
-    if (clients.length < 2) return;
+    if (clients.length < 2) {
+      if (routingControlRef.current && map) {
+        try {
+          map.removeControl(routingControlRef.current);
+          routingControlRef.current = null;
+        } catch (e) {
+          console.log('Error removiendo control (pocos puntos)');
+        }
+      }
+      return;
+    }
 
     const waypoints = clients.map(c => L.latLng(c.lat, c.lng));
 
-    const routingControl = L.Routing.control({
+    // Remover anterior si existe antes de crear nuevo
+    if (routingControlRef.current && map) {
+      try {
+        map.removeControl(routingControlRef.current);
+      } catch (e) {
+        console.log('Error limpiando control anterior');
+      }
+    }
+
+    routingControlRef.current = L.Routing.control({
       waypoints,
       routeWhileDragging: false,
       addWaypoints: false,
       show: false,
       fitSelectedRoutes: false,
       lineOptions: {
-        styles: [{ color: '#92dce5', weight: 4, opacity: 0.8 }],
+        styles: [{ color: 'var(--primary-color)', weight: 6, opacity: 0.6 }],
         extendToWaypoints: true,
         missingRouteTolerance: 1
       },
       router: L.Routing.osrmv1({
          serviceUrl: 'https://router.project-osrm.org/route/v1',
-         profile: 'driving' // Usamos driving porque la data peatonal en OSRM tiene errores y da vueltas innecesarias
+         profile: 'driving'
       })
     }).addTo(map);
 
     return () => {
-      if (map && routingControl) {
+      const currentControl = routingControlRef.current;
+      if (currentControl && map) {
         try {
-          // Intentar remover solo si el contenedor del mapa aún existe
-          if (map.getContainer()) {
-            map.removeControl(routingControl);
-          }
+          // Vaciamos los waypoints primero para alertar a la librería que se limpie
+          currentControl.setWaypoints([]);
+          map.removeControl(currentControl);
+          routingControlRef.current = null;
         } catch (e) {
-          // Si el mapa ya se desmontó, ignoramos el error
-          console.log('Routing control ya removido o mapa inexistente');
+          console.log('Cleanup de routing manejado silenciosamente');
         }
       }
     };
@@ -174,24 +194,24 @@ export const CreateRouteModal: React.FC<CreateRouteProps> = ({ onClose, onSucces
       <div className="glass-panel" style={{ flex: 1, display: 'flex', overflow: 'hidden', padding: 0 }}>
         
         {/* Form Sidebar */}
-        <div style={{ width: '350px', background: 'rgba(0, 0, 0, 0.9)', padding: '2rem', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ width: '350px', background: 'var(--primary-color)', padding: '2rem', display: 'flex', flexDirection: 'column', color: '#FFFFFF' }}>
           <h3>{initialRoute ? 'Editor de Ruta' : 'Diseñador de Rutas'}</h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
             {initialRoute ? 'Edita los pines existentes o añade nuevos.' : 'Haz click en el mapa para añadir pines de clientes.'}
           </p>
           
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1, minHeight: 0 }}>
             <div>
               <label>Nombre de Ruta (opcional)</label>
-              <input type="text" value={routeName} onChange={e => setRouteName(e.target.value)} style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem', background: 'var(--surface-light)', border: 'none', color: 'var(--text-main)', borderRadius: '4px' }}/>
+              <input type="text" value={routeName} onChange={e => setRouteName(e.target.value)} style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem', background: 'rgba(0,0,0,0.1)', border: 'none', color: '#FFFFFF', borderRadius: '4px' }}/>
             </div>
 
             <div>
               <label>Asignar Trabajador *</label>
-              <select value={workerId} onChange={e => setWorkerId(e.target.value)} style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem', background: 'var(--surface-light)', border: 'none', color: 'var(--text-main)', borderRadius: '4px' }}>
+              <select value={workerId} onChange={e => setWorkerId(e.target.value)} style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem', background: 'rgba(0,0,0,0.1)', border: 'none', color: '#FFFFFF', borderRadius: '4px' }}>
                 <option value="">-- Seleccionar --</option>
                 {workers.map(w => (
-                  <option key={w.id} value={w.id} style={{ background: 'var(--bg-color)' }}>{w.name} ({w.email})</option>
+                  <option key={w.id} value={w.id} style={{ background: 'var(--primary-color)', color: '#FFFFFF' }}>{w.name} ({w.email})</option>
                 ))}
               </select>
             </div>
@@ -199,9 +219,9 @@ export const CreateRouteModal: React.FC<CreateRouteProps> = ({ onClose, onSucces
             <div style={{ flex: 1, overflowY: 'auto', marginTop: '1rem', paddingRight: '0.5rem' }}>
               <h4>Puntos de Visita ({clients.length})</h4>
               {clients.map((c, idx) => (
-                <div key={idx} style={{ display: 'flex', flexDirection: 'column', background: 'rgba(255,255,255,0.05)', padding: '0.8rem', marginTop: '0.5rem', borderRadius: '4px', gap: '0.5rem' }}>
+                <div key={idx} style={{ display: 'flex', flexDirection: 'column', background: 'rgba(0,0,0,0.1)', padding: '0.8rem', marginTop: '0.5rem', borderRadius: '4px', gap: '0.5rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ color: 'var(--primary-color)', fontWeight: 'bold' }}>#{idx + 1}</span>
+                    <span style={{ color: '#FFFFFF', fontWeight: 'bold' }}>#{idx + 1}</span>
                     <button type="button" onClick={() => handleRemoveClient(idx)} style={{ background: 'transparent', border: 'none', color: 'var(--danger-color)', cursor: 'pointer', fontWeight: 'bold' }}>Eliminar</button>
                   </div>
                   <input 
@@ -209,15 +229,15 @@ export const CreateRouteModal: React.FC<CreateRouteProps> = ({ onClose, onSucces
                     value={c.name} 
                     onChange={e => handleUpdateClientName(idx, e.target.value)} 
                     placeholder="Nombre del punto"
-                    style={{ width: '100%', padding: '0.4rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--surface-border)', color: 'var(--text-main)', borderRadius: '4px', fontSize: '0.85rem' }}
+                    style={{ width: '100%', padding: '0.4rem', background: 'rgba(0,0,0,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFFFF', borderRadius: '4px', fontSize: '0.85rem' }}
                   />
                 </div>
               ))}
             </div>
 
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexShrink: 0 }}>
-              <button type="button" onClick={onClose} style={{ flex: 1, padding: '0.8rem', background: 'transparent', border: '1px solid var(--surface-border)', color: 'var(--text-main)', borderRadius: '8px', cursor: 'pointer' }}>Cancelar</button>
-              <button type="submit" disabled={loading} style={{ flex: 1, padding: '0.8rem', background: 'var(--primary-color)', border: 'none', color: 'var(--bg-color)', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>{loading ? 'Guardando...' : initialRoute ? 'Actualizar' : 'Crear Ruta'}</button>
+              <button type="button" onClick={onClose} style={{ flex: 1, padding: '0.8rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.4)', color: '#FFFFFF', borderRadius: '8px', cursor: 'pointer' }}>Cancelar</button>
+              <button type="submit" disabled={loading} style={{ flex: 1, padding: '0.8rem', background: '#FFFFFF', border: 'none', color: 'var(--primary-color)', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>{loading ? 'Guardando...' : initialRoute ? 'Actualizar' : 'Crear Ruta'}</button>
             </div>
           </form>
         </div>

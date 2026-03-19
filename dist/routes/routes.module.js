@@ -12,12 +12,13 @@ const typeorm_1 = require("@nestjs/typeorm");
 const routes_controller_1 = require("./routes.controller");
 const routes_service_1 = require("./routes.service");
 const route_entity_1 = require("./entities/route.entity");
+const events_module_1 = require("../events/events.module");
 let RoutesModule = class RoutesModule {
 };
 exports.RoutesModule = RoutesModule;
 exports.RoutesModule = RoutesModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([route_entity_1.Route])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([route_entity_1.Route]), events_module_1.EventsModule],
         controllers: [routes_controller_1.RoutesController],
         providers: [routes_service_1.RoutesService],
         exports: [routes_service_1.RoutesService]

@@ -1,9 +1,17 @@
 import * as SQLite from 'expo-sqlite';
 
 const dbName = 'lookapp_offline.db';
+let dbInstance: SQLite.SQLiteDatabase | null = null;
+
+export const getDatabase = async () => {
+  if (!dbInstance) {
+    dbInstance = await SQLite.openDatabaseAsync(dbName);
+  }
+  return dbInstance;
+};
 
 export const initSyncDatabase = async () => {
-  const db = await SQLite.openDatabaseAsync(dbName);
+  const db = await getDatabase();
   
   await db.execAsync(`
     PRAGMA journal_mode = WAL;
@@ -28,10 +36,10 @@ export const initSyncDatabase = async () => {
 
     CREATE TABLE IF NOT EXISTS sync_queue (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      type TEXT NOT NULL, -- 'visit_report', 'time_log', 'tracking'
-      payload TEXT NOT NULL, -- JSON string
+      type TEXT NOT NULL,
+      payload TEXT NOT NULL,
       event_timestamp TEXT NOT NULL,
-      status TEXT DEFAULT 'pending' -- 'pending', 'syncing'
+      status TEXT DEFAULT 'pending'
     );
   `);
 

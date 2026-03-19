@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Alert, ScrollView } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Theme } from '../constants/theme';
 import * as Location from 'expo-location';
-import { MapPin, Navigation, ClipboardList, XOctagon } from 'lucide-react-native';
+import { Navigation, ClipboardList, XOctagon, ChevronLeft } from 'lucide-react-native';
+import { CustomMarker } from '../components/CustomMarker';
 
-export const ClientVisitScreen = ({ route, navigation }) => {
+export const ClientVisitScreen = ({ route, navigation }: any) => {
   const { client } = route.params;
   const [currentLocation, setCurrentLocation] = useState<Location.LocationObjectCoords | null>(null);
   const [abandonModalVisible, setAbandonModalVisible] = useState(false);
@@ -15,48 +16,74 @@ export const ClientVisitScreen = ({ route, navigation }) => {
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('Permission to access location was denied');
-        return;
-      }
+      if (status !== 'granted') return;
+      
+      // Obtener ubicación inicial
       let location = await Location.getCurrentPositionAsync({});
       setCurrentLocation(location.coords);
+
+      // Suscribirse a cambios de ubicación para navegación en tiempo real
+      const subscription = await Location.watchPositionAsync(
+        { accuracy: Location.Accuracy.High, distanceInterval: 5 },
+        (loc) => setCurrentLocation(loc.coords)
+      );
+
+      return () => subscription.remove();
     })();
   }, []);
 
   const handleAbandon = () => {
     if (!abandonReason.trim()) return Alert.alert('Error', 'Debes ingresar un motivo');
-    // Aquí se guardaría el estado 'abandonado' localmente
     Alert.alert('Éxito', 'Visita marcada como abandonada');
     setAbandonModalVisible(false);
     navigation.goBack();
   };
 
   const clientCoords = {
-    latitude: client.location.coordinates[1],
-    longitude: client.location.coordinates[0],
+    latitude: client.location?.coordinates ? client.location.coordinates[1] : (client.lat || 0),
+    longitude: client.location?.coordinates ? client.location.coordinates[0] : (client.lng || 0),
   };
+
+  const navigationPath = currentLocation ? [
+    { latitude: currentLocation.latitude, longitude: currentLocation.longitude },
+    clientCoords
+  ] : [];
 
   return (
     <View style={styles.container}>
-      {/* Map Section */}
       <View style={[styles.mapContainer, showFullMap ? styles.fullMap : null]}>
         <MapView
+          provider={PROVIDER_GOOGLE}
           style={styles.map}
-          initialRegion={{
+          region={{
             ...clientCoords,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005,
           }}
           showsUserLocation={true}
+          followsUserLocation={true}
+          showsMyLocationButton={true}
+          customMapStyle={mapStyle}
         >
-          <Marker coordinate={clientCoords} title={client.name}>
-             <View style={styles.customMarker}>
-               <MapPin size={24} color={Theme.colors.text} />
-             </View>
-          </Marker>
+          <CustomMarker 
+            coordinate={clientCoords} 
+            title={client.name}
+          />
+
+          {currentLocation && (
+            <Polyline
+              coordinates={navigationPath}
+              strokeColor="#38bdf8" // Azul navegación
+              strokeWidth={4}
+              lineDashPattern={[0]}
+            />
+          )}
         </MapView>
         
+        <TouchableOpacity style={styles.backFab} onPress={() => navigation.goBack()}>
+          <ChevronLeft size={24} color={Theme.colors.text} />
+        </TouchableOpacity>
+
         <TouchableOpacity 
           style={styles.mapToggle} 
           onPress={() => setShowFullMap(!showFullMap)}
@@ -65,48 +92,53 @@ export const ClientVisitScreen = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Info & Actions */}
       {!showFullMap && (
-        <ScrollView style={styles.infoArea}>
-          <View style={styles.clientHeader}>
-            <Text style={styles.clientName}>{client.name}</Text>
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusText}>{client.status?.toUpperCase() || 'PENDIENTE'}</Text>
+        <View style={styles.infoArea}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={styles.clientHeader}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.clientName}>{client.name}</Text>
+                <Text style={styles.addressText}>{client.address || 'Sin dirección'}</Text>
+              </View>
+              <View style={styles.statusBadge}>
+                <Text style={styles.statusText}>{client.status?.toUpperCase() || 'PENDIENTE'}</Text>
+              </View>
             </View>
-          </View>
-          
-          <Text style={styles.addressLabel}>Dirección:</Text>
-          <Text style={styles.addressText}>{client.address || 'Sin dirección especificada'}</Text>
+            
+            <View style={styles.coordsContainer}>
+                <Text style={styles.coordsLabel}>Coordenadas Destino</Text>
+                <Text style={styles.coordsText}>Lat: {clientCoords.latitude.toFixed(5)}, Lng: {clientCoords.longitude.toFixed(5)}</Text>
+            </View>
 
-          {client.description && (
-            <>
-              <Text style={styles.addressLabel}>Descripción:</Text>
-              <Text style={styles.addressText}>{client.description}</Text>
-            </>
-          )}
+            {client.description && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Descripción / Referencia</Text>
+                <Text style={styles.descriptionText}>{client.description}</Text>
+              </View>
+            )}
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.registerButton]}
-              onPress={() => navigation.navigate('ReportVisit', { client })}
-            >
-              <ClipboardList color="#fff" size={24} />
-              <Text style={styles.buttonText}>REGISTRAR</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity 
+                style={[styles.actionButton, styles.registerButton]}
+                onPress={() => navigation.navigate('ReportVisit', { client })}
+              >
+                <ClipboardList color={Theme.colors.background} size={22} />
+                <Text style={styles.registerButtonText}>REGISTRAR VISITA</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.abandonButton]}
-              onPress={() => setAbandonModalVisible(true)}
-            >
-              <XOctagon color="#fff" size={24} />
-              <Text style={styles.buttonText}>ABANDONAR</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+              <TouchableOpacity 
+                style={[styles.actionButton, styles.abandonButton]}
+                onPress={() => setAbandonModalVisible(true)}
+              >
+                <XOctagon color={Theme.colors.text} size={22} />
+                <Text style={styles.abandonButtonText}>ABANDONAR</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </View>
       )}
 
-      {/* Abandon Modal */}
-      <Modal visible={abandonModalVisible} transparent animationType="slide">
+      <Modal visible={abandonModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Motivo de Abandono</Text>
@@ -120,17 +152,11 @@ export const ClientVisitScreen = ({ route, navigation }) => {
               onChangeText={setAbandonReason}
             />
             <View style={styles.modalButtons}>
-              <TouchableOpacity 
-                style={[styles.modalBtn, styles.cancelBtn]} 
-                onPress={() => setAbandonModalVisible(false)}
-              >
-                <Text style={styles.btnText}>CANCELAR</Text>
+              <TouchableOpacity style={[styles.modalBtn, styles.cancelBtn]} onPress={() => setAbandonModalVisible(false)}>
+                <Text style={styles.cancelBtnText}>CANCELAR</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.modalBtn, styles.confirmBtn]} 
-                onPress={handleAbandon}
-              >
-                <Text style={styles.btnText}>GUARDAR</Text>
+              <TouchableOpacity style={[styles.modalBtn, styles.confirmBtn]} onPress={handleAbandon}>
+                <Text style={styles.confirmBtnText}>ENVIAR</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -140,157 +166,62 @@ export const ClientVisitScreen = ({ route, navigation }) => {
   );
 };
 
+const mapStyle = [
+    { "featureType": "poi", "elementType": "labels", "stylers": [{ "visibility": "off" }] }
+];
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Theme.colors.background,
-  },
-  mapContainer: {
-    height: '40%',
-    width: '100%',
-  },
-  fullMap: {
-    height: '100%',
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
+  container: { flex: 1, backgroundColor: Theme.colors.background },
+  mapContainer: { height: '35%', width: '100%' },
+  fullMap: { height: '100%' },
+  map: { ...StyleSheet.absoluteFillObject },
+  backFab: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    backgroundColor: Theme.colors.surface,
+    padding: 10,
+    borderRadius: 12,
+    elevation: 4,
   },
   mapToggle: {
     position: 'absolute',
     bottom: 20,
     alignSelf: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 25,
     borderWidth: 1,
     borderColor: Theme.colors.primary,
   },
-  mapToggleText: {
-    color: Theme.colors.text,
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
-  infoArea: {
-    flex: 1,
-    padding: Theme.spacing.lg,
-  },
-  clientHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Theme.spacing.md,
-  },
-  clientName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Theme.colors.text,
-    flex: 1,
-  },
-  statusBadge: {
-    backgroundColor: Theme.colors.warning + '20',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Theme.colors.warning,
-  },
-  statusText: {
-    color: Theme.colors.warning,
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  addressLabel: {
-    color: Theme.colors.primary,
-    fontWeight: 'bold',
-    fontSize: 14,
-    marginTop: 15,
-  },
-  addressText: {
-    color: Theme.colors.text,
-    fontSize: 16,
-    marginTop: 5,
-  },
-  buttonContainer: {
-    marginTop: 30,
-    gap: 15,
-    marginBottom: 40,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderRadius: 12,
-    gap: 10,
-  },
-  registerButton: {
-    backgroundColor: Theme.colors.primary,
-  },
-  abandonButton: {
-    backgroundColor: Theme.colors.danger,
-  },
-  buttonText: {
-    color: Theme.colors.background,
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-  customMarker: {
-    backgroundColor: Theme.colors.primary,
-    padding: 8,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: Theme.colors.text,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: Theme.colors.surface,
-    padding: 20,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Theme.colors.surfaceLight,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Theme.colors.text,
-    marginBottom: 15,
-  },
-  input: {
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderWidth: 1,
-    borderColor: Theme.colors.surfaceLight,
-    borderRadius: 8,
-    padding: 12,
-    color: Theme.colors.text,
-    textAlignVertical: 'top',
-    height: 100,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    gap: 10,
-    marginTop: 20,
-  },
-  modalBtn: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  cancelBtn: {
-    borderWidth: 1,
-    borderColor: Theme.colors.textMuted,
-  },
-  confirmBtn: {
-    backgroundColor: Theme.colors.primary,
-  },
-  btnText: {
-    fontWeight: 'bold',
-    color: Theme.colors.text,
-  }
+  mapToggleText: { color: Theme.colors.text, fontWeight: 'bold', fontSize: 13 },
+  infoArea: { flex: 1, backgroundColor: Theme.colors.background, borderTopLeftRadius: 30, borderTopRightRadius: 30, marginTop: -30, padding: 24, elevation: 10 },
+  clientHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
+  clientName: { fontSize: 26, fontWeight: 'bold', color: Theme.colors.text },
+  addressText: { color: Theme.colors.textMuted, fontSize: 14, marginTop: 4 },
+  statusBadge: { backgroundColor: Theme.colors.warning + '15', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, borderWidth: 1, borderColor: Theme.colors.warning + '40' },
+  statusText: { color: Theme.colors.warning, fontSize: 10, fontWeight: '800' },
+  coordsContainer: { backgroundColor: Theme.colors.surface, padding: 16, borderRadius: 12, marginBottom: 20 },
+  coordsLabel: { color: Theme.colors.primary, fontSize: 11, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 4 },
+  coordsText: { color: Theme.colors.text, fontSize: 14, fontWeight: '600' },
+  section: { marginBottom: 20 },
+  sectionTitle: { color: Theme.colors.textMuted, fontSize: 12, fontWeight: 'bold', marginBottom: 8 },
+  descriptionText: { color: Theme.colors.text, fontSize: 15, lineHeight: 22 },
+  buttonContainer: { gap: 12, marginTop: 10 },
+  actionButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 18, borderRadius: 16, gap: 12 },
+  registerButton: { backgroundColor: Theme.colors.primary },
+  registerButtonText: { color: Theme.colors.background, fontWeight: '900', fontSize: 16 },
+  abandonButton: { backgroundColor: Theme.colors.surface, borderWidth: 1, borderColor: Theme.colors.surfaceLight },
+  abandonButtonText: { color: Theme.colors.text, fontWeight: '700', fontSize: 16 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'center', padding: 24 },
+  modalContent: { backgroundColor: Theme.colors.surface, padding: 24, borderRadius: 24, borderWidth: 1, borderColor: Theme.colors.surfaceLight },
+  modalTitle: { fontSize: 22, fontWeight: 'bold', color: Theme.colors.text, marginBottom: 16 },
+  input: { backgroundColor: 'rgba(255,255,255,0.03)', borderWidth: 1, borderColor: Theme.colors.surfaceLight, borderRadius: 12, padding: 16, color: Theme.colors.text, textAlignVertical: 'top', height: 120, fontSize: 16 },
+  modalButtons: { flexDirection: 'row', gap: 12, marginTop: 24 },
+  modalBtn: { flex: 1, padding: 16, borderRadius: 14, alignItems: 'center' },
+  cancelBtn: { backgroundColor: 'transparent' },
+  cancelBtnText: { color: Theme.colors.textMuted, fontWeight: 'bold' },
+  confirmBtn: { backgroundColor: Theme.colors.primary },
+  confirmBtnText: { color: Theme.colors.background, fontWeight: 'bold' }
 });

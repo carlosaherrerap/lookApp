@@ -10,7 +10,13 @@ export const LoginPage: React.FC<{ onLogin: (token: string) => void }> = ({ onLo
     e.preventDefault();
     try {
       const res = await axios.post('http://localhost:3009/auth/login', { email, password });
-      onLogin(res.data.access_token);
+      
+      if (res.data.user.role !== 'admin') {
+        setError('Acceso denegado: Solo administradores pueden ingresar al portal.');
+        return;
+      }
+
+      onLogin(res.data.access_token, res.data.user);
     } catch (err) {
       setError('Credenciales incorrectas');
     }

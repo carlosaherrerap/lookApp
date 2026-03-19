@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Client } from '../../clients/entities/client.entity';
 import { User } from '../../users/entities/user.entity';
 
@@ -8,9 +8,11 @@ export class VisitReport {
   id: number;
 
   @ManyToOne(() => Client)
+  @JoinColumn({ name: 'client_id' })
   client: Client;
 
   @ManyToOne(() => User)
+  @JoinColumn({ name: 'worker_id' })
   worker: User;
 
   @Column({ type: 'jsonb', nullable: true })

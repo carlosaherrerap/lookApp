@@ -6,7 +6,7 @@ export const Sidebar: React.FC = () => {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <h1 className="text-gradient">LookApp Admin</h1>
+        <h1 style={{ color: '#FFFFFF' }}>LookApp Admin</h1>
       </div>
       
       <nav className="nav-links">
@@ -28,10 +28,14 @@ export const Sidebar: React.FC = () => {
         </NavLink>
       </nav>
 
-      <div style={{ marginTop: 'auto' }}>
-        <button className="nav-item" style={{ background: 'transparent', border: 'none', width: '100%', cursor: 'pointer' }}>
-          <LogOut size={20} color="var(--danger-color)" />
-          <span style={{ color: 'var(--danger-color)' }}>Cerrar Sesión</span>
+      <div style={{ marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
+        <button className="nav-item" style={{ background: 'transparent', border: 'none', width: '100%', cursor: 'pointer' }} onClick={() => {
+          localStorage.removeItem('admin_token');
+          localStorage.removeItem('user_data');
+          window.location.href = '/login';
+        }}>
+          <LogOut size={20} color="#FFFFFF" />
+          <span style={{ color: '#FFFFFF' }}>Cerrar Sesión</span>
         </button>
       </div>
     </aside>

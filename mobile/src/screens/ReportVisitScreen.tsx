@@ -2,23 +2,30 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { Theme } from '../constants/theme';
 import { SyncService } from '../services/SyncService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const ReportVisitScreen = ({ route, navigation }) => {
+export const ReportVisitScreen = ({ route, navigation }: any) => {
   const { client } = route.params;
   const [observation, setObservation] = useState('');
   const [found, setFound] = useState(true);
+  const [paymentStatus, setPaymentStatus] = useState('PAGARÁ'); // Opciones: PAGARÁ, PAGÓ, EMITE RECLAMO
 
   const handleSubmit = async () => {
-    const reportData = {
-      client_id: client.id,
-      data: {
-        observation,
-        found_in_home: found,
-      },
-      // location_at_report se agregaría con expo-location en una integración real
-    };
-
     try {
+      const storedUser = await AsyncStorage.getItem('user_data');
+      if (!storedUser) throw new Error('Usuario no identificado');
+      const user = JSON.parse(storedUser);
+
+      const reportData = {
+        client_id: client.id,
+        worker_id: user.id,
+        data: {
+          observation,
+          found_in_home: found,
+          payment_status: paymentStatus,
+        },
+      };
+
       // Guardar en cola de sincronización (Offline-First)
       await SyncService.queueReport('visit_report', reportData);
       
@@ -47,6 +54,19 @@ export const ReportVisitScreen = ({ route, navigation }) => {
         >
           <Text style={[styles.choiceText, !found && styles.activeChoiceText]}>NO</Text>
         </TouchableOpacity>
+      </View>
+
+      <Text style={styles.label}>Estado de Pago</Text>
+      <View style={styles.paymentGroup}>
+        {['PAGARÁ', 'PAGÓ', 'EMITE RECLAMO'].map((status) => (
+          <TouchableOpacity 
+            key={status}
+            style={[styles.paymentButton, paymentStatus === status && styles.activePayment]}
+            onPress={() => setPaymentStatus(status)}
+          >
+            <Text style={[styles.paymentText, paymentStatus === status && styles.activePaymentText]}>{status}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       <Text style={styles.label}>Observaciones adicionales:</Text>
@@ -96,7 +116,7 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.surface,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Theme.colors.border,
+    borderColor: Theme.colors.surfaceLight,
   },
   activeChoice: {
     backgroundColor: Theme.colors.primary,
@@ -109,6 +129,29 @@ const styles = StyleSheet.create({
   activeChoiceText: {
     color: Theme.colors.background,
   },
+  paymentGroup: {
+    flexDirection: 'column',
+    gap: 8,
+  },
+  paymentButton: {
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: Theme.colors.surface,
+    borderWidth: 1,
+    borderColor: Theme.colors.surfaceLight,
+  },
+  activePayment: {
+    backgroundColor: Theme.colors.primary + '30',
+    borderColor: Theme.colors.primary,
+  },
+  paymentText: {
+    color: Theme.colors.textMuted,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  activePaymentText: {
+    color: Theme.colors.primary,
+  },
   textArea: {
     backgroundColor: Theme.colors.surface,
     color: Theme.colors.text,
@@ -116,7 +159,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     textAlignVertical: 'top',
     borderWidth: 1,
-    borderColor: Theme.colors.border,
+    borderColor: Theme.colors.surfaceLight,
+    marginTop: 10,
   },
   submitButton: {
     backgroundColor: Theme.colors.success,

@@ -30,10 +30,12 @@ __decorate([
 ], VisitReport.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => client_entity_1.Client),
+    (0, typeorm_1.JoinColumn)({ name: 'client_id' }),
     __metadata("design:type", client_entity_1.Client)
 ], VisitReport.prototype, "client", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
+    (0, typeorm_1.JoinColumn)({ name: 'worker_id' }),
     __metadata("design:type", user_entity_1.User)
 ], VisitReport.prototype, "worker", void 0);
 __decorate([

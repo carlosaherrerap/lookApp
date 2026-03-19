@@ -2,19 +2,39 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Route } from './entities/route.entity';
-import { User } from '../users/entities/user.entity';
-
+import { EventsGateway } from '../events/events.gateway';
 
 @Injectable()
 export class RoutesService {
   constructor(
     @InjectRepository(Route)
     private routesRepository: Repository<Route>,
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   async create(createRouteDto: any): Promise<Route> {
-    const newRoute = this.routesRepository.create(createRouteDto as object);
-    return this.routesRepository.save(newRoute as Route);
+    return await this.routesRepository.manager.transaction(async (manager) => {
+      const { clients, ...routeData } = createRouteDto;
+      
+      // 1. Crear y guardar la ruta base
+      const route = manager.create(Route, routeData as object);
+      const savedRoute = await manager.save(Route, route);
+
+      // 2. Guardar clientes manualmente
+      if (clients && clients.length > 0) {
+        const clientEntities = clients.map((c: any) => 
+          manager.create('clients', { ...c, route: savedRoute })
+        );
+        await manager.save('clients', clientEntities);
+      }
+
+      // Notificar
+      if (savedRoute.worker?.id) {
+        this.eventsGateway.notifyRouteUpdate(savedRoute.worker.id, { type: 'create', routeId: savedRoute.id });
+      }
+
+      return this.findOne(savedRoute.id) as any;
+    });
   }
 
   async findAll(): Promise<Route[]> {
@@ -32,12 +52,56 @@ export class RoutesService {
   }
 
   async update(id: number, updateData: any): Promise<Route> {
-    const route = await this.findOne(id);
-    if (!route) throw new Error('Ruta no encontrada');
+    return await this.routesRepository.manager.transaction(async (manager) => {
+      const route = await manager.findOne(Route, {
+        where: { id },
+        relations: ['worker', 'clients'],
+      });
+      
+      if (!route) throw new Error('Ruta no encontrada');
 
-    // Manejo de actualización con cascada para clientes
-    const updatedRoute = this.routesRepository.merge(route, updateData);
-    return this.routesRepository.save(updatedRoute);
+      const { clients: inputClients, ...routeFields } = updateData;
+
+      // 1. Manejo de borrado de clientes (Orphans)
+      if (inputClients) {
+        const inputClientIds = inputClients
+          .filter((c: any) => c.id)
+          .map((c: any) => Number(c.id));
+        
+        const clientsToDeleteResource = route.clients
+          .filter(c => !inputClientIds.includes(Number(c.id)))
+          .map(c => c.id);
+
+        if (clientsToDeleteResource.length > 0) {
+          await manager.delete('clients', clientsToDeleteResource);
+        }
+
+        // 2. Sincronizar clientes (Actualizar existentes y Crear nuevos)
+        // Eliminamos la propiedad clients del objeto para que merge no intente cascada
+        const clientPromises = inputClients.map((c: any) => {
+          if (c.id) {
+            // Actualizar existente
+            return manager.update('clients', c.id, { ...c, route: route });
+          } else {
+            // Crear nuevo
+            const newClient = manager.create('clients', { ...c, route: route });
+            return manager.save('clients', newClient);
+          }
+        });
+        await Promise.all(clientPromises);
+      }
+
+      // 3. Actualizar campos de la ruta
+      manager.merge(Route, route, routeFields);
+      const saved = await manager.save(Route, route);
+
+      // 4. Notificación de tiempo real
+      if (saved.worker?.id) {
+        this.eventsGateway.notifyRouteUpdate(saved.worker.id, { type: 'update', routeId: saved.id });
+      }
+
+      return this.findOne(saved.id) as any;
+    });
   }
   // New method to fetch routes for a specific worker
   async findByWorker(workerId: number): Promise<Route[]> {

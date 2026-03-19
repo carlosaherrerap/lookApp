@@ -50,7 +50,7 @@ __decorate([
     __metadata("design:type", user_entity_1.User)
 ], Route.prototype, "worker", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => client_entity_1.Client, (client) => client.route, { cascade: true }),
+    (0, typeorm_1.OneToMany)(() => client_entity_1.Client, (client) => client.route),
     __metadata("design:type", Array)
 ], Route.prototype, "clients", void 0);
 __decorate([

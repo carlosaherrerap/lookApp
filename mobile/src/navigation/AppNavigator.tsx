@@ -4,11 +4,12 @@ import { RoutesScreen } from '../screens/RoutesScreen';
 import { ClientDetailScreen } from '../screens/ClientDetailScreen';
 import { ClientVisitScreen } from '../screens/ClientVisitScreen';
 import { ReportVisitScreen } from '../screens/ReportVisitScreen';
+import { RouteMapScreen } from '../screens/RouteMapScreen';
 import { Theme } from '../constants/theme';
 
 const Stack = createNativeStackNavigator();
 
-export const AppNavigator = ({ user, onLogout }) => {
+export const AppNavigator = ({ user, onLogout }: { user: any, onLogout: () => void }) => {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -24,6 +25,7 @@ export const AppNavigator = ({ user, onLogout }) => {
       <Stack.Screen name="ClientDetail" component={ClientDetailScreen} options={{ title: 'Clientes' }} />
       <Stack.Screen name="ClientVisit" component={ClientVisitScreen} options={{ title: 'Visita' }} />
       <Stack.Screen name="ReportVisit" component={ReportVisitScreen} options={{ title: 'Registro' }} />
+      <Stack.Screen name="RouteMap" component={RouteMapScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };

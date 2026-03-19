@@ -1,69 +1,95 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Theme } from '../constants/theme';
 import * as SQLite from 'expo-sqlite';
+import { Map, ChevronRight, CheckCircle2 } from 'lucide-react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
-export const ClientDetailScreen = ({ route, navigation }) => {
+export const ClientDetailScreen = ({ route, navigation }: any) => {
   const { routeId } = route.params;
-  const [clients, setClients] = useState([]);
+  const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async () => {
     try {
       const db = await SQLite.openDatabaseAsync('lookapp_offline.db');
-      // En una versión real, esto también intentaría sincronizar primero con la API
-      const localClients = await db.getAllAsync(
+      const localClients: any[] = await db.getAllAsync(
         'SELECT * FROM local_clients WHERE route_id = ? ORDER BY visit_order',
         [routeId]
       );
       setClients(localClients);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching clients:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [routeId]);
 
-  useEffect(() => {
-    fetchClients();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchClients();
+    }, [fetchClients])
+  );
 
-  const renderClient = ({ item }) => {
+  const allFinished = clients.length > 0 && clients.every(c => 
+    c.status === 'visitado' || c.status === 'abandonado' || c.status === 'visited'
+  );
+
+  const renderClient = ({ item }: { item: any }) => {
     const isFinished = item.status === 'visitado' || item.status === 'abandonado' || item.status === 'visited';
     
     return (
       <TouchableOpacity 
-        style={[styles.clientCard, isFinished && { opacity: 0.5 }]}
-        onPress={() => !isFinished && navigation.navigate('ClientVisit', { client: item })}
-        disabled={isFinished}
+        style={[styles.clientCard, isFinished && { borderLeftColor: item.status === 'abandonado' ? Theme.colors.error : Theme.colors.success }]}
+        onPress={() => navigation.navigate('ClientVisit', { client: item })}
       >
         <View style={styles.clientInfo}>
           <Text style={styles.clientName}>{item.name}</Text>
-          <Text style={styles.clientAddress}>{item.address}</Text>
+          <Text style={styles.clientAddress} numberOfLines={1}>{item.address || 'Sin dirección'}</Text>
           {isFinished && (
-            <Text style={{ color: item.status === 'abandonado' ? Theme.colors.danger : Theme.colors.success, fontSize: 12, fontWeight: 'bold' }}>
-              {item.status.toUpperCase()}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 }}>
+              <CheckCircle2 size={12} color={item.status === 'abandonado' ? Theme.colors.error : Theme.colors.success} />
+              <Text style={{ color: item.status === 'abandonado' ? Theme.colors.error : Theme.colors.success, fontSize: 12, fontWeight: 'bold' }}>
+                {item.status.toUpperCase()}
+              </Text>
+            </View>
           )}
         </View>
-        <View style={[styles.statusDot, { 
-          backgroundColor: isFinished 
-            ? (item.status === 'abandonado' ? Theme.colors.danger : Theme.colors.success) 
-            : Theme.colors.warning 
-        }]} />
+        <ChevronRight size={20} color={Theme.colors.textMuted} />
       </TouchableOpacity>
     );
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Clientes en Ruta</Text>
-      <FlatList
-        data={clients}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderClient}
-        ListEmptyComponent={<Text style={styles.emptyText}>No hay clientes cargados para esta ruta.</Text>}
-      />
+      <View style={[styles.header, allFinished && styles.headerSuccess]}>
+        <View>
+          <Text style={[styles.title, allFinished && { color: Theme.colors.background }]}>Ruta #{routeId}</Text>
+          <Text style={[styles.subtitle, allFinished && { color: Theme.colors.background + 'CC' }]}>
+            {clients.filter(c => c.status === 'visitado' || c.status === 'visited').length} de {clients.length} visitas completadas
+          </Text>
+        </View>
+        
+        <TouchableOpacity 
+          style={styles.mapButton}
+          onPress={() => navigation.navigate('RouteMap', { clients, routeId })}
+        >
+          <Map size={20} color={Theme.colors.background} />
+          <Text style={styles.mapButtonText}>Ver Ruta</Text>
+        </TouchableOpacity>
+      </View>
+
+      {loading ? (
+        <ActivityIndicator size="large" color={Theme.colors.primary} style={{ marginTop: 50 }} />
+      ) : (
+        <FlatList
+          data={clients}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderClient}
+          contentContainerStyle={{ padding: 16 }}
+          ListEmptyComponent={<Text style={styles.emptyText}>No hay clientes cargados para esta ruta.</Text>}
+        />
+      )}
     </View>
   );
 };
@@ -72,22 +98,55 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Theme.colors.background,
-    padding: Theme.spacing.md,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: Theme.colors.text,
-    marginBottom: Theme.spacing.lg,
-  },
-  clientCard: {
+  header: {
+    padding: 24,
+    paddingTop: 40,
     backgroundColor: Theme.colors.surface,
-    padding: Theme.spacing.md,
-    borderRadius: Theme.borderRadius.md,
-    marginBottom: Theme.spacing.sm,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.colors.surfaceLight,
+  },
+  headerSuccess: {
+    backgroundColor: Theme.colors.primary, // Verde InDrive Lima
+    borderBottomColor: 'transparent',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: Theme.colors.text,
+  },
+  subtitle: {
+    fontSize: 12,
+    color: Theme.colors.textMuted,
+    marginTop: 4,
+  },
+  mapButton: {
+    backgroundColor: Theme.colors.text,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+  },
+  mapButtonText: {
+    color: Theme.colors.background,
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  clientCard: {
+    backgroundColor: Theme.colors.surface,
+    padding: 16,
+    borderRadius: Theme.borderRadius.md,
+    marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderLeftWidth: 4,
+    borderLeftColor: Theme.colors.primary,
   },
   clientInfo: {
     flex: 1,
@@ -99,18 +158,12 @@ const styles = StyleSheet.create({
   },
   clientAddress: {
     color: Theme.colors.textMuted,
-    fontSize: 14,
+    fontSize: 13,
     marginTop: 2,
-  },
-  statusDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginLeft: 10,
   },
   emptyText: {
     color: Theme.colors.textMuted,
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 50,
   }
 });

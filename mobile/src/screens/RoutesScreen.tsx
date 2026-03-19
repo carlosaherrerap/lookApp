@@ -4,6 +4,7 @@ import { Theme } from '../constants/theme';
 import axios from 'axios';
 import * as SQLite from 'expo-sqlite';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { io } from 'socket.io-client';
 
 const API_URL = 'http://192.168.1.55:3009';
 
@@ -11,6 +12,25 @@ export const RoutesScreen = ({ user, navigation, onLogout }: { user: any, naviga
   const [routes, setRoutes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    // Configuración de Tiempo Real
+    const socket = io(API_URL);
+    
+    if (user?.id) {
+       console.log('Listening for real-time updates for worker:', user.id);
+       socket.on(`route_updated_${user.id}`, (data) => {
+         console.log('Real-time update received:', data);
+         fetchRoutes(true); // Refrescar automáticamente
+       });
+    }
+
+    fetchRoutes();
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   const fetchRoutes = async (isRefreshing = false) => {
     if (isRefreshing) setRefreshing(true);
@@ -32,24 +52,31 @@ export const RoutesScreen = ({ user, navigation, onLogout }: { user: any, naviga
 
       // 2. Cachear en SQLite local para uso offline
       const db = await SQLite.openDatabaseAsync('lookapp_offline.db');
-      await db.runAsync('DELETE FROM local_routes');
-      await db.runAsync('DELETE FROM local_clients'); // Limpiar clientes antiguos
       
-      for (const route of remoteRoutes) {
-        await db.runAsync(
-          'INSERT INTO local_routes (id, name, assigned_date, status) VALUES (?, ?, ?, ?)',
-          [route.id, route.name, route.assigned_date, route.status]
-        );
+      try {
+        await db.runAsync('DELETE FROM local_routes');
+        await db.runAsync('DELETE FROM local_clients'); // Limpiar clientes antiguos
         
-        // Sincronizar clientes de esta ruta
-        if (route.clients && route.clients.length > 0) {
-          for (const client of route.clients) {
-            await db.runAsync(
-              'INSERT INTO local_clients (id, route_id, name, address, lat, lng, visit_order, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-              [client.id, route.id, client.name, client.address, client.lat, client.lng, client.visit_order || 0, client.status || 'pendiente']
-            );
+        for (const route of remoteRoutes) {
+          await db.runAsync(
+            'INSERT INTO local_routes (id, name, assigned_date, status) VALUES (?, ?, ?, ?)',
+            [route.id, route.name, route.assigned_date, route.status]
+          );
+          
+          if (route.clients && route.clients.length > 0) {
+            for (const client of route.clients) {
+              const lat = client.location?.coordinates ? client.location.coordinates[1] : 0;
+              const lng = client.location?.coordinates ? client.location.coordinates[0] : 0;
+              
+              await db.runAsync(
+                'INSERT INTO local_clients (id, route_id, name, address, lat, lng, visit_order, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                [client.id, route.id, client.name, client.address, lat, lng, client.visit_order || 0, client.status || 'pendiente']
+              );
+            }
           }
         }
+      } catch (dbError) {
+        console.error('SQLite Sync Error:', dbError);
       }
     } catch (error: any) {
       console.log('Error fetching from API, falling back to local DB:', error);
@@ -72,12 +99,9 @@ export const RoutesScreen = ({ user, navigation, onLogout }: { user: any, naviga
   };
 
   const handleLogout = async () => {
+    // Cerrar socket y limpiar sesión
     onLogout();
   };
-
-  useEffect(() => {
-    fetchRoutes();
-  }, []);
 
   const renderItem = ({ item }: { item: any }) => (
     <TouchableOpacity 
