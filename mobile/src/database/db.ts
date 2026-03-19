@@ -2,11 +2,16 @@ import * as SQLite from 'expo-sqlite';
 
 const dbName = 'lookapp_offline.db';
 let dbInstance: SQLite.SQLiteDatabase | null = null;
+let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
 export const getDatabase = async () => {
-  if (!dbInstance) {
-    dbInstance = await SQLite.openDatabaseAsync(dbName);
+  if (dbInstance) return dbInstance;
+  
+  if (!dbPromise) {
+    dbPromise = SQLite.openDatabaseAsync(dbName);
   }
+  
+  dbInstance = await dbPromise;
   return dbInstance;
 };
 
@@ -43,6 +48,13 @@ export const initSyncDatabase = async () => {
       status TEXT DEFAULT 'pending'
     );
   `);
+
+  // Migración rápida para añadir descripción si la tabla ya existía
+  try {
+    await db.execAsync('ALTER TABLE local_clients ADD COLUMN description TEXT;');
+  } catch (e) {
+    // Silencioso: la columna ya existe o es una instalación nueva
+  }
 
   return db;
 };

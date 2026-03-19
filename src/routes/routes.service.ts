@@ -78,17 +78,24 @@ export class RoutesService {
 
         // 2. Sincronizar clientes (Actualizar existentes y Crear nuevos)
         // Eliminamos la propiedad clients del objeto para que merge no intente cascada
-        const clientPromises = inputClients.map((c: any) => {
+        // Sincronizar clientes secuencialmente para evitar el error de pg concurrente en transacciones
+        for (const c of inputClients) {
           if (c.id) {
             // Actualizar existente
-            return manager.update('clients', c.id, { ...c, route: route });
+            await manager.update('clients', c.id, { 
+              name: c.name, 
+              address: c.address, 
+              description: c.description,
+              location: c.location,
+              visit_order: c.visit_order,
+              route: route 
+            });
           } else {
             // Crear nuevo
             const newClient = manager.create('clients', { ...c, route: route });
-            return manager.save('clients', newClient);
+            await manager.save('clients', newClient);
           }
-        });
-        await Promise.all(clientPromises);
+        }
       }
 
       // 3. Actualizar campos de la ruta
