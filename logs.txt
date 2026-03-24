@@ -1,0 +1,291 @@
+ERROR DE SERVIDOR:
+
+[Nest] 43208  - 03/20/2026, 9:21:41 AM   ERROR [ExceptionsHandler] QueryFailedError: new row for relation "visit_reports" violates check constraint "visit_reports_sync_status_check"
+    at PostgresQueryRunner.query (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\driver\src\driver\postgres\PostgresQueryRunner.ts:325:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async InsertQueryBuilder.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\query-builder\src\query-builder\InsertQueryBuilder.ts:164:33)
+    at async SubjectExecutor.executeInsertOperations (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:435:42)
+    at async SubjectExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:137:9)
+    at async EntityPersistExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\EntityPersistExecutor.ts:182:21)
+    at async ReportsService.createSyncReport (C:\Users\ASUS\Documents\github_Projects\lookApp\src\reports\reports.service.ts:31:25)
+    at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-proxy.js:9:17 {
+  query: 'INSERT INTO "visit_reports"("data", "event_timestamp", "server_timestamp", "location_at_report", "sync_status", "client_id", "worker_id") VALUES ($1, $2, DEFAULT, DEFAULT, $3, $4, DEFAULT) RETURNING "id", "server_timestamp", "sync_status"',
+  parameters: [
+    '{"observation":"Ha fallecido","found_in_home":false}',
+    2026-03-20T14:21:41.561Z,
+    'synced',
+    39
+  ],
+  driverError: error: new row for relation "visit_reports" violates check constraint "visit_reports_sync_status_check"
+      at C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\pg\lib\client.js:631:17
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async PostgresQueryRunner.query (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\driver\src\driver\postgres\PostgresQueryRunner.ts:254:25)
+      at async InsertQueryBuilder.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\query-builder\src\query-builder\InsertQueryBuilder.ts:164:33)
+      at async SubjectExecutor.executeInsertOperations (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:435:42)
+      at async SubjectExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:137:9)
+      at async EntityPersistExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\EntityPersistExecutor.ts:182:21)
+      at async ReportsService.createSyncReport (C:\Users\ASUS\Documents\github_Projects\lookApp\src\reports\reports.service.ts:31:25)
+      at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+      at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-proxy.js:9:17 {
+    length: 382,
+    severity: 'ERROR',
+    code: '23514',
+    detail: 'Failing row contains (6, 39, null, {"observation": "Ha fallecido", "found_in_home": false}, 2026-03-20 14:21:41.561+00, 2026-03-20 14:21:41.596173+00, synced, null).',
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: 'public',
+    table: 'visit_reports',
+    column: undefined,
+    dataType: undefined,
+    constraint: 'visit_reports_sync_status_check',
+    file: 'execMain.c',
+    line: '2055',
+    routine: 'ExecConstraints'
+  },
+  length: 382,
+  severity: 'ERROR',
+  code: '23514',
+  detail: 'Failing row contains (6, 39, null, {"observation": "Ha fallecido", "found_in_home": false}, 2026-03-20 14:21:41.561+00, 2026-03-20 14:21:41.596173+00, synced, null).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'visit_reports',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'visit_reports_sync_status_check',
+  file: 'execMain.c',
+  line: '2055',
+  routine: 'ExecConstraints'
+}
+[Nest] 43208  - 03/20/2026, 9:21:41 AM   ERROR [ExceptionsHandler] QueryFailedError: new row for relation "visit_reports" violates check constraint "visit_reports_sync_status_check"
+    at PostgresQueryRunner.query (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\driver\src\driver\postgres\PostgresQueryRunner.ts:325:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async InsertQueryBuilder.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\query-builder\src\query-builder\InsertQueryBuilder.ts:164:33)
+    at async SubjectExecutor.executeInsertOperations (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:435:42)
+    at async SubjectExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:137:9)
+    at async EntityPersistExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\EntityPersistExecutor.ts:182:21)
+    at async ReportsService.createSyncReport (C:\Users\ASUS\Documents\github_Projects\lookApp\src\reports\reports.service.ts:31:25)
+    at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-proxy.js:9:17 {
+  query: 'INSERT INTO "visit_reports"("data", "event_timestamp", "server_timestamp", "location_at_report", "sync_status", "client_id", "worker_id") VALUES ($1, $2, DEFAULT, DEFAULT, $3, $4, DEFAULT) RETURNING "id", "server_timestamp", "sync_status"',
+  parameters: [
+    '{"observation":"pagó 700 so el dia de ayer 18 de marzo del 2026, su dni es 75747335\\n","found_in_home":true,"payment_status":"PAGÓ"}',
+    2026-03-20T14:21:41.715Z,
+    'synced',
+    127
+  ],
+  driverError: error: new row for relation "visit_reports" violates check constraint "visit_reports_sync_status_check"
+      at C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\pg\lib\client.js:631:17
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async PostgresQueryRunner.query (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\driver\src\driver\postgres\PostgresQueryRunner.ts:254:25)
+      at async InsertQueryBuilder.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\query-builder\src\query-builder\InsertQueryBuilder.ts:164:33)
+      at async SubjectExecutor.executeInsertOperations (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:435:42)
+      at async SubjectExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:137:9)
+      at async EntityPersistExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\EntityPersistExecutor.ts:182:21)
+      at async ReportsService.createSyncReport (C:\Users\ASUS\Documents\github_Projects\lookApp\src\reports\reports.service.ts:31:25)
+      at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+      at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-proxy.js:9:17 {
+    length: 395,
+    severity: 'ERROR',
+    code: '23514',
+    detail: 'Failing row contains (7, 127, null, {"observation": "pagó 700 so el dia de ayer 18 de marzo del 202..., 2026-03-20 14:21:41.715+00, 2026-03-20 14:21:41.717201+00, synced, null).',
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: 'public',
+    table: 'visit_reports',
+    column: undefined,
+    dataType: undefined,
+    constraint: 'visit_reports_sync_status_check',
+    file: 'execMain.c',
+    line: '2055',
+    routine: 'ExecConstraints'
+  },
+  length: 395,
+  severity: 'ERROR',
+  code: '23514',
+  detail: 'Failing row contains (7, 127, null, {"observation": "pagó 700 so el dia de ayer 18 de marzo del 202..., 2026-03-20 14:21:41.715+00, 2026-03-20 14:21:41.717201+00, synced, null).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'visit_reports',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'visit_reports_sync_status_check',
+  file: 'execMain.c',
+  line: '2055',
+  routine: 'ExecConstraints'
+}
+[Nest] 43208  - 03/20/2026, 9:21:41 AM   ERROR [ExceptionsHandler] QueryFailedError: new row for relation "visit_reports" violates check constraint "visit_reports_sync_status_check"
+    at PostgresQueryRunner.query (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\driver\src\driver\postgres\PostgresQueryRunner.ts:325:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async InsertQueryBuilder.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\query-builder\src\query-builder\InsertQueryBuilder.ts:164:33)
+    at async SubjectExecutor.executeInsertOperations (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:435:42)
+    at async SubjectExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:137:9)
+    at async EntityPersistExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\EntityPersistExecutor.ts:182:21)
+    at async ReportsService.createSyncReport (C:\Users\ASUS\Documents\github_Projects\lookApp\src\reports\reports.service.ts:31:25)
+    at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-proxy.js:9:17 {
+  query: 'INSERT INTO "visit_reports"("data", "event_timestamp", "server_timestamp", "location_at_report", "sync_status", "client_id", "worker_id") VALUES ($1, $2, DEFAULT, DEFAULT, $3, $4, $5) RETURNING "id", "server_timestamp", "sync_status"',
+  parameters: [
+    '{"observation":"vbj","found_in_home":true,"payment_status":"EMITE RECLAMO"}',
+    2026-03-20T14:21:41.760Z,
+    'synced',
+    127,
+    4
+  ],
+  driverError: error: new row for relation "visit_reports" violates check constraint "visit_reports_sync_status_check"
+      at C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\pg\lib\client.js:631:17
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async PostgresQueryRunner.query (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\driver\src\driver\postgres\PostgresQueryRunner.ts:254:25)
+      at async InsertQueryBuilder.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\query-builder\src\query-builder\InsertQueryBuilder.ts:164:33)
+      at async SubjectExecutor.executeInsertOperations (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:435:42)
+      at async SubjectExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:137:9)
+      at async EntityPersistExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\EntityPersistExecutor.ts:182:21)
+      at async ReportsService.createSyncReport (C:\Users\ASUS\Documents\github_Projects\lookApp\src\reports\reports.service.ts:31:25)
+      at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+      at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-proxy.js:9:17 {
+    length: 391,
+    severity: 'ERROR',
+    code: '23514',
+    detail: 'Failing row contains (8, 127, 4, {"observation": "vbj", "found_in_home": true, "payment_status": ..., 2026-03-20 14:21:41.76+00, 2026-03-20 14:21:41.762058+00, synced, null).',
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: 'public',
+    table: 'visit_reports',
+    column: undefined,
+    dataType: undefined,
+    constraint: 'visit_reports_sync_status_check',
+    file: 'execMain.c',
+    line: '2055',
+    routine: 'ExecConstraints'
+  },
+  length: 391,
+  severity: 'ERROR',
+  code: '23514',
+  detail: 'Failing row contains (8, 127, 4, {"observation": "vbj", "found_in_home": true, "payment_status": ..., 2026-03-20 14:21:41.76+00, 2026-03-20 14:21:41.762058+00, synced, null).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'visit_reports',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'visit_reports_sync_status_check',
+  file: 'execMain.c',
+  line: '2055',
+  routine: 'ExecConstraints'
+}
+[Nest] 43208  - 03/20/2026, 9:21:41 AM   ERROR [ExceptionsHandler] QueryFailedError: new row for relation "visit_reports" violates check constraint "visit_reports_sync_status_check"
+    at PostgresQueryRunner.query (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\driver\src\driver\postgres\PostgresQueryRunner.ts:325:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async InsertQueryBuilder.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\query-builder\src\query-builder\InsertQueryBuilder.ts:164:33)
+    at async SubjectExecutor.executeInsertOperations (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:435:42)
+    at async SubjectExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:137:9)
+    at async EntityPersistExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\EntityPersistExecutor.ts:182:21)
+    at async ReportsService.createSyncReport (C:\Users\ASUS\Documents\github_Projects\lookApp\src\reports\reports.service.ts:31:25)
+    at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-proxy.js:9:17 {
+  query: 'INSERT INTO "visit_reports"("data", "event_timestamp", "server_timestamp", "location_at_report", "sync_status", "client_id", "worker_id") VALUES ($1, $2, DEFAULT, DEFAULT, $3, $4, $5) RETURNING "id", "server_timestamp", "sync_status"',
+  parameters: [
+    '{"observation":"bjkl","found_in_home":true,"payment_status":"PAGARÁ"}',
+    2026-03-20T14:21:41.858Z,
+    'synced',
+    166,
+    6
+  ],
+  driverError: error: new row for relation "visit_reports" violates check constraint "visit_reports_sync_status_check"
+      at C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\pg\lib\client.js:631:17
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async PostgresQueryRunner.query (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\driver\src\driver\postgres\PostgresQueryRunner.ts:254:25)
+      at async InsertQueryBuilder.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\query-builder\src\query-builder\InsertQueryBuilder.ts:164:33)
+      at async SubjectExecutor.executeInsertOperations (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:435:42)
+      at async SubjectExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:137:9)
+      at async EntityPersistExecutor.execute (C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\typeorm\persistence\src\persistence\EntityPersistExecutor.ts:182:21)
+      at async ReportsService.createSyncReport (C:\Users\ASUS\Documents\github_Projects\lookApp\src\reports\reports.service.ts:31:25)
+      at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+      at async C:\Users\ASUS\Documents\github_Projects\lookApp\node_modules\@nestjs\core\router\router-proxy.js:9:17 {
+    length: 392,
+    severity: 'ERROR',
+    code: '23514',
+    detail: 'Failing row contains (9, 166, 6, {"observation": "bjkl", "found_in_home": true, "payment_status":..., 2026-03-20 14:21:41.858+00, 2026-03-20 14:21:41.859773+00, synced, null).',
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: 'public',
+    table: 'visit_reports',
+    column: undefined,
+    dataType: undefined,
+    constraint: 'visit_reports_sync_status_check',
+    file: 'execMain.c',
+    line: '2055',
+    routine: 'ExecConstraints'
+  },
+  length: 392,
+  severity: 'ERROR',
+  code: '23514',
+  detail: 'Failing row contains (9, 166, 6, {"observation": "bjkl", "found_in_home": true, "payment_status":..., 2026-03-20 14:21:41.858+00, 2026-03-20 14:21:41.859773+00, synced, null).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'visit_reports',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'visit_reports_sync_status_check',
+  file: 'execMain.c',
+  line: '2055',
+  routine: 'ExecConstraints'
+}
+
+------------------------------------------------------------------------
+========================================================================
+------------------------------------------------------------------------
+
+ERROR DE BASE DE DATOS:
+db-1  | 2026-03-20 14:21:41.615 UTC [55] ERROR:  new row for relation "visit_reports" violates check constraint "visit_reports_sync_status_check"
+db-1  | 2026-03-20 14:21:41.615 UTC [55] DETAIL:  Failing row contains (6, 39, null, {"observation": "Ha fallecido", "found_in_home": false}, 2026-03-20 14:21:41.561+00, 2026-03-20 14:21:41.596173+00, synced, null).
+db-1  | 2026-03-20 14:21:41.615 UTC [55] STATEMENT:  INSERT INTO "visit_reports"("data", "event_timestamp", "server_timestamp", "location_at_report", "sync_status", "client_id", "worker_id") VALUES ($1, $2, DEFAULT, DEFAULT, $3, $4, DEFAULT) RETURNING "id", "server_timestamp", "sync_status"
+db-1  | 2026-03-20 14:21:41.721 UTC [55] ERROR:  new row for relation "visit_reports" violates check constraint "visit_reports_sync_status_check"
+db-1  | 2026-03-20 14:21:41.721 UTC [55] DETAIL:  Failing row contains (7, 127, null, {"observation": "pagó 700 so el dia de ayer 18 de marzo del 202..., 2026-03-20 14:21:41.715+00, 2026-03-20 14:21:41.717201+00, synced, null).
+db-1  | 2026-03-20 14:21:41.721 UTC [55] STATEMENT:  INSERT INTO "visit_reports"("data", "event_timestamp", "server_timestamp", "location_at_report", "sync_status", "client_id", "worker_id") VALUES ($1, $2, DEFAULT, DEFAULT, $3, $4, DEFAULT) RETURNING "id", "server_timestamp", "sync_status"
+db-1  | 2026-03-20 14:21:41.765 UTC [55] ERROR:  new row for relation "visit_reports" violates check constraint "visit_reports_sync_status_check"
+db-1  | 2026-03-20 14:21:41.765 UTC [55] DETAIL:  Failing row contains (8, 127, 4, {"observation": "vbj", "found_in_home": true, "payment_status": ..., 2026-03-20 14:21:41.76+00, 2026-03-20 14:21:41.762058+00, synced, null).
+db-1  | 2026-03-20 14:21:41.765 UTC [55] STATEMENT:  INSERT INTO "visit_reports"("data", "event_timestamp", "server_timestamp", "location_at_report", "sync_status", "client_id", "worker_id") VALUES ($1, $2, DEFAULT, DEFAULT, $3, $4, $5) RETURNING "id", "server_timestamp", "sync_status"
+db-1  | 2026-03-20 14:21:41.863 UTC [55] ERROR:  new row for relation "visit_reports" violates check constraint "visit_reports_sync_status_check"
+db-1  | 2026-03-20 14:21:41.863 UTC [55] DETAIL:  Failing row contains (9, 166, 6, {"observation": "bjkl", "found_in_home": true, "payment_status":..., 2026-03-20 14:21:41.858+00, 2026-03-20 14:21:41.859773+00, synced, null).
+db-1  | 2026-03-20 14:21:41.863 UTC [55] STATEMENT:  INSERT INTO "visit_reports"("data", "event_timestamp", "server_timestamp", "location_at_report", "sync_status", "client_id", "worker_id") VALUES ($1, $2, DEFAULT, DEFAULT, $3, $4, $5) RETURNING "id", "server_timestamp", "sync_status"
+
+------------------------------------------------------------------------
+========================================================================
+------------------------------------------------------------------------
+
+ERRROR EN MI APP ANDROID:
+
+ LOG  Listening for real-time updates for worker: 6
+ LOG  Real-time update received: {"routeId": 1, "type": "update"}
+ LOG  Failed to sync item 1, will retry later: [AxiosError: Request failed with status code 500]
+ LOG  Failed to sync item 2, will retry later: [AxiosError: Request failed with status code 500]
+ LOG  Failed to sync item 3, will retry later: [AxiosError: Request failed with status code 500]
+ LOG  Failed to sync item 4, will retry later: [AxiosError: Request failed with status code 500]

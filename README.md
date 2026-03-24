@@ -1,138 +1,55 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Schedule's v2.0 🚀
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+**Schedule's** es un ecosistema digital avanzado diseñado para la gestión eficiente de visitas de campo, cobranzas y seguimiento de productividad en tiempo real. Inspirado en la estética profesional de Adobe/Lightroom, ofrece herramientas potentes tanto para trabajadores en ruta como para administradores.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/carlosahpalma" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 💻 Plataforma Web (Admin)
+Portal centralizado para la supervisión y planificación estratégica.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Tecnologías**: React 18, Vite, TypeScript, Lucide Icons, Vanilla CSS.
+- **Funciones Principales**:
+  - **Dashboard Inteligente**: Visualización de métricas de cumplimiento y estados de visitas.
+  - **Gestión de Trabajadores**: Control de acceso y asignación de zonas.
+  - **Planificación de Rutas**: Creación de rutas geolocalizadas con cálculo de distancias.
+  - **Diseño Adobe**: Interfaz minimalista en tonos profundos (Adobe Dark) y Cyan para máxima legibilidad.
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## 📱 Aplicación Móvil (Worker)
+Herramienta de campo con capacidades offline-first y geolocalización precisa.
 
-## Compile and run the project
+- **Tecnologías**: React Native (Expo SDK 54), TypeScript, SQLite (Local), Axios, Lucide Icons.
+- **Funciones Principales**:
+  - **Navegación v2.0**: Estructura de pestañas dividida en:
+    - **Rutas**: Lista personal de clientes asignados.
+    - **Mundo**: Vista global competitiva para captar clientes cercanos no programados.
+    - **Estados**: Registro de asistencia (Inicio, Refrigerio, Fin de Jornada).
+  - **Métricas de Eficiencia**: Cronómetros automáticos para medir el tiempo de traslado y el tiempo de permanencia con el cliente.
+  - **Ficha Crediticia Editable**: Formulario dinámico para actualizar historial de pagos, saldos y condiciones contables en el sitio.
+  - **Competitividad "En Camino"**: Botón para bloquear clientes en tiempo real, evitando que otros trabajadores se dirijan al mismo punto.
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+## ⚙️ Backend (API Server)
+El motor que sincroniza los datos y gestiona la lógica de negocio.
 
-# production mode
-$ npm run start:prod
-```
+- **Tecnologías**: NestJS, TypeORM, PostgreSQL, PostGIS, JWT Auth, Socket.io (Real-time).
+- **Funciones Principales**:
+  - **Sincronización Inteligente**: Manejo de reportes masivos con control de integridad.
+  - **PostGIS Integration**: Consultas espaciales para validar que los reportes se realicen en la ubicación correcta del cliente.
+  - **Lógica de Bloqueo**: Gestión de estados competitivos (`EN CAMINO`) para optimizar el despliegue del personal.
+  - **Tracking de Productividad**: Registro de tardanzas, alertas de inactividad (idle) y tiempos de ejecución.
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## 🗄️ Base de Datos
+- **PostgreSQL**: Almacenamiento relacional robusto.
+- **Tablas v2.0**:
+  - `client_credit_info`: Historial financiero extendido.
+  - `productivity_logs`: Seguimiento de KPIs de trabajadores.
+  - `visit_reports`: Versión extendida con soporte para fotos y métricas de tiempo.
 
-# e2e tests
-$ npm run test:e2e
+---
 
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources paypal
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-
-### CREDENCIALES
-Email: worker@mapx.com
-Contraseña: password123
----------------------------------------------
-DB_CONFIG = {
-'server': '192.168.1.42,1433',
-'database': 'Moviles',
-'user': 'sa',
-'password': r'Administrador2025$$', # Usamos r'' para evitar problemas con caracteres especiales
-'table': 'Base.Bitel',
-'columns': 'PERIODO,DOCUMENTO,TELEFONO,TITULAR,PLAN,FECHA,DEPARTAMENTO,PROVINCIA,DISTRITO',
-'id_column': 'PERIODO',
-'batch_min': 50,
-'batch_max': 250,
-'sleep_min': 3,
-'sleep_max': 7
-}
-CHECKPOINT_FILE = 'checkpoint.json'
-OUTPUT_FILE = 'output_2.txt'
----------------------------------------------
-DB_CONFIG = {
-'server': '192.168.1.41,1433',
-'database': 'SUNAT',
-'user': 'sa',
-'password': r'Informa2025$$', # Usamos r'' para evitar problemas con caracteres especiales
-'table': 'Sunat.PadronReducido',
-'columns': 'padron_id, RUC, NOMBRE_O_RAZON_SOCIAL, ESTADO_DEL_CONTRIBUYENTE, CONDICION_DE_DOMICILIO, UBIGEO, TIPO_DE_VIA, NOMBRE_VIA, CODIGO_DE_ZONA, TIPO_DE_ZONA, NUMERO, INTERIOR, LOTE, DEPARTAMENTO, MANZANA, KILOMETRO, FECHA_PERIODO',
-'id_column': 'padron_id',
-'batch_min': 50,
-'batch_max': 200,
-'sleep_min': 3,
-'sleep_max': 7
-}
-CHECKPOINT_FILE = 'checkpoint_sunat.json'
-OUTPUT_FILE = 'output_sunat.txt'
------------------------------------------------
-
-Email: admin@mapx.com
-Contraseña: password123
+**Schedule's** es más que un gestor de mapas; es una solución integral para maximizar la productividad y transparencia en operaciones de campo.

@@ -6,19 +6,19 @@
 
 :root {
   --font-primary: 'Inter', sans-serif;
-  --bg-color: #F4F7F6; /* Un gris muy claro, estilo Rappi */
-  --surface-color: #FFFFFF;
-  --surface-border: #E0E0E0;
-  --primary-color: #0EC665; /* Verde Rappi */
-  --primary-glow: rgba(14, 198, 101, 0.2);
-  --secondary-color: #332927;
-  --accent-color: #FE3F23; /* Naranja Rappi */
-  --text-main: #2D2D2D;
-  --text-muted: #757575;
-  --success-color: #0EC665;
+  --bg-color: #0A0E12; /* Adobe Dark */
+  --surface-color: #1A1D21;
+  --surface-border: #2D3139;
+  --primary-color: #00a4e4; /* Adobe Blue */
+  --primary-glow: rgba(0, 164, 228, 0.2);
+  --secondary-color: #0078aa;
+  --accent-color: #00f0ff; /* Adobe Cyan */
+  --text-main: #FFFFFF;
+  --text-muted: #8E9196;
+  --success-color: #00f0ff;
   --warning-color: #FFB800;
-  --danger-color: #FE3F23;
-  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --danger-color: #FF4D4D;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 * {

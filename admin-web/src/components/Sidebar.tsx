@@ -6,7 +6,7 @@ export const Sidebar: React.FC = () => {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <h1 style={{ color: '#FFFFFF' }}>LookApp Admin</h1>
+        <h1 style={{ color: '#00f0ff', letterSpacing: '1px' }}>Schedule's</h1>
       </div>
       
       <nav className="nav-links">

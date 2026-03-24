@@ -49,7 +49,7 @@ export const LoginScreen = ({ onLoginSuccess }: { onLoginSuccess: (user: any) =>
         />
       </View>
 
-      <Text style={styles.title}>Map X</Text>
+      <Text style={styles.title}>Schedule's</Text>
       
       <TextInput
         style={styles.input}

@@ -26,9 +26,24 @@ export class Client {
   @Column({ nullable: true })
   visit_order: number;
 
+  @Column({ nullable: true })
+  apellido_paterno: string;
+
+  @Column({ nullable: true })
+  apellido_materno: string;
+
+  @Column({ nullable: true })
+  documento: string;
+
+  @Column({ nullable: true })
+  ubigeo: number;
+
+  @Column({ type: 'date', nullable: true })
+  fecha_visita: string;
+
   @Column({
     type: 'enum',
-    enum: ['pendiente', 'visitado', 'ausente', 'abandonado', 'otro'],
+    enum: ['pendiente', 'visitado', 'ausente', 'abandonado', 'otro', 'PROGRAMADO', 'EN CAMINO', 'REPROGRAMAR'],
     default: 'pendiente',
   })
   status: string;
