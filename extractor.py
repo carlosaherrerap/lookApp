@@ -21,7 +21,7 @@ DB_CONFIG = {
 'sleep_max': 7
 }
 CHECKPOINT_FILE = 'checkpoint_sunat.json'
-OUTPUT_FILE = 'output_sunat_5.txt'
+OUTPUT_FILE = 'output_sunat_7.txt'
 
 
 

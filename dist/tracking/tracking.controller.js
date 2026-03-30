@@ -21,10 +21,12 @@ let TrackingController = class TrackingController {
     constructor(trackingService) {
         this.trackingService = trackingService;
     }
-    async saveTracking(payload) {
+    async saveTracking(payload, req) {
+        payload.worker_id = req.user.userId;
         return this.trackingService.saveTrackingHistory(payload);
     }
-    async saveTimeLog(payload) {
+    async saveTimeLog(payload, req) {
+        payload.worker_id = req.user.userId;
         return this.trackingService.saveTimeLog(payload);
     }
 };
@@ -32,15 +34,17 @@ exports.TrackingController = TrackingController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], TrackingController.prototype, "saveTracking", null);
 __decorate([
     (0, common_1.Post)('time-log'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], TrackingController.prototype, "saveTimeLog", null);
 exports.TrackingController = TrackingController = __decorate([

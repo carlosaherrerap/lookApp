@@ -1,4 +1,4 @@
-import { Controller, Patch, Param, Body, UseGuards, Get } from '@nestjs/common';
+import { Controller, Patch, Param, Body, UseGuards, Get, Req } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -12,9 +12,14 @@ export class ClientsController {
     return this.clientsService.findMundo();
   }
 
+  @Get('active')
+  getActive(@Req() req: any) {
+    return this.clientsService.findActiveByWorker(req.user.userId);
+  }
+
   @Patch(':id/en-camino')
-  markEnCamino(@Param('id') id: string) {
-    return this.clientsService.markEnCamino(+id);
+  markEnCamino(@Param('id') id: string, @Req() req: any) {
+    return this.clientsService.markEnCamino(+id, req.user.userId);
   }
 
   @Patch(':id')

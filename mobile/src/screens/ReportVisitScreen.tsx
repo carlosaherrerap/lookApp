@@ -1,10 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator, Modal } from 'react-native';
 import { Theme } from '../constants/theme';
 import { SyncService } from '../services/SyncService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { Calendar, DollarSign, ListOrdered, FileText, CheckCircle2, RotateCcw } from 'lucide-react-native';
+
+const InputField = ({ label, value, onChange, icon: Icon, keyboardType = 'default', placeholder }: any) => (
+  <View style={styles.inputContainer}>
+      <Text style={styles.inputLabel}>{label}</Text>
+      <View style={styles.inputWrapper}>
+          <Icon size={16} color={Theme.colors.primary} />
+          <TextInput
+              style={styles.input}
+              value={value}
+              onChangeText={onChange}
+              placeholder={placeholder || label}
+              placeholderTextColor={Theme.colors.textMuted}
+              keyboardType={keyboardType}
+          />
+      </View>
+  </View>
+);
 
 export const ReportVisitScreen = ({ route, navigation }: any) => {
   const { client } = route.params;
@@ -16,6 +33,11 @@ export const ReportVisitScreen = ({ route, navigation }: any) => {
   // Tiempos
   const [visitStartTime] = useState(new Date());
   const [travelStartTime, setTravelStartTime] = useState<Date | null>(null);
+
+  // Reprogramación
+  const [reproModalVisible, setReproModalVisible] = useState(false);
+  const [reproDate, setReproDate] = useState('');
+  const [reproReason, setReproReason] = useState('');
 
   // Ficha Crediticia
   const [creditInfo, setCreditInfo] = useState({
@@ -37,17 +59,23 @@ export const ReportVisitScreen = ({ route, navigation }: any) => {
     })();
   }, []);
 
-  const handleSubmit = async (newStatus: string) => {
+  const handleReprogramar = () => {
+    if (!reproDate || !reproReason) {
+      Alert.alert('Datos incompletos', 'Por favor ingresa la nueva fecha y el motivo.');
+      return;
+    }
+    setReproModalVisible(false);
+    handleSubmit('REPROGRAMAR', { next_visit: reproDate, reason: reproReason });
+  };
+
+  const handleSubmit = async (newStatus: string, extraData: any = {}) => {
     setLoading(true);
     try {
       const storedUser = await AsyncStorage.getItem('user_data');
       if (!storedUser) throw new Error('Usuario no identificado');
       const user = JSON.parse(storedUser);
 
-      // Ubicación exacta del reporte
       const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-
-      // Cálculos de tiempo
       const now = new Date();
       const visitSeconds = Math.floor((now.getTime() - visitStartTime.getTime()) / 1000);
       let travelSeconds = 0;
@@ -74,16 +102,18 @@ export const ReportVisitScreen = ({ route, navigation }: any) => {
           observation,
           found_in_home: found,
           payment_status: paymentStatus,
+          ...extraData
         },
       };
 
       await SyncService.queueReport('visit_report', reportData);
       
-      // Limpiar tiempo de traslado
       await AsyncStorage.removeItem(`travel_start_${client.id}`);
+      await AsyncStorage.removeItem(`client_status_${client.id}`);
+      await AsyncStorage.removeItem('global_en_camino_client_id');
 
       Alert.alert('Éxito', `Reporte guardado como ${newStatus.toUpperCase()}.`);
-      navigation.navigate('RutasTab'); // Volver a rutas
+      navigation.navigate('RutasTab', { screen: 'RoutesHome' });
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'No se pudo guardar el reporte.');
@@ -92,147 +122,153 @@ export const ReportVisitScreen = ({ route, navigation }: any) => {
     }
   };
 
-  const InputField = ({ label, value, onChange, icon: Icon, keyboardType = 'default' }: any) => (
-    <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>{label}</Text>
-        <View style={styles.inputWrapper}>
-            <Icon size={18} color={Theme.colors.primary} />
-            <TextInput
-                style={styles.input}
-                value={value}
-                onChangeText={onChange}
-                placeholder={label}
-                placeholderTextColor={Theme.colors.textMuted}
-                keyboardType={keyboardType}
-            />
-        </View>
-    </View>
-  );
-
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 60 }}>
-      <Text style={styles.headerTitle}>Ficha del Cliente</Text>
-      <Text style={styles.clientSubtitle}>{client.name} {client.apellido_paterno}</Text>
+    <View style={{ flex: 1, backgroundColor: Theme.colors.background }}>
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 60 }}>
+        <Text style={styles.headerTitle}>Ficha del Cliente</Text>
+        <Text style={styles.clientSubtitle}>{client.name} {client.apellido_paterno}</Text>
 
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-            <FileText size={20} color={Theme.colors.primary} />
-            <Text style={styles.cardHeaderTitle}>INFORMACIÓN CREDITICIA</Text>
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+              <FileText size={18} color={Theme.colors.primary} />
+              <Text style={styles.cardHeaderTitle}>INFORMACIÓN CREDITICIA</Text>
+          </View>
+          
+          <InputField label="Tipo de Crédito" value={creditInfo.tipo_credito} icon={ListOrdered} 
+            onChange={(t:any) => setCreditInfo({...creditInfo, tipo_credito: t})} />
+          
+          <InputField label="Fecha Desembolso" value={creditInfo.fecha_desembolso} icon={Calendar} 
+            onChange={(t:any) => setCreditInfo({...creditInfo, fecha_desembolso: t})} />
+          
+          <View style={styles.row}>
+              <View style={{ flex: 1 }}>
+                  <InputField label="Monto" value={creditInfo.monto_desembolso} icon={DollarSign} keyboardType="numeric"
+                    onChange={(t:any) => setCreditInfo({...creditInfo, monto_desembolso: t})} />
+              </View>
+              <View style={{ flex: 1 }}>
+                  <InputField label="Saldo Capital" value={creditInfo.saldo_capital} icon={DollarSign} keyboardType="numeric"
+                    onChange={(t:any) => setCreditInfo({...creditInfo, saldo_capital: t})} />
+              </View>
+          </View>
+
+          <View style={styles.row}>
+              <View style={{ flex: 1 }}>
+                  <InputField label="Cuotas Totales" value={creditInfo.nro_cuotas} icon={ListOrdered} keyboardType="numeric"
+                    onChange={(t:any) => setCreditInfo({...creditInfo, nro_cuotas: t})} />
+              </View>
+              <View style={{ flex: 1 }}>
+                  <InputField label="Cuotas Pagadas" value={creditInfo.cuotas_pagadas} icon={CheckCircle2} keyboardType="numeric"
+                    onChange={(t:any) => setCreditInfo({...creditInfo, cuotas_pagadas: t})} />
+              </View>
+          </View>
+
+          <InputField label="Monto de la Cuota" value={creditInfo.monto_cuota} icon={DollarSign} keyboardType="numeric"
+            onChange={(t:any) => setCreditInfo({...creditInfo, monto_cuota: t})} />
+
+          <InputField label="Condición Contable" value={creditInfo.condicion_contable} icon={FileText} 
+            onChange={(t:any) => setCreditInfo({...creditInfo, condicion_contable: t})} />
         </View>
         
-        <InputField label="Tipo de Crédito" value={creditInfo.tipo_credito} icon={ListOrdered} 
-          onChange={(t:any) => setCreditInfo({...creditInfo, tipo_credito: t})} />
-        
-        <InputField label="Fecha Desembolso" value={creditInfo.fecha_desembolso} icon={Calendar} 
-          onChange={(t:any) => setCreditInfo({...creditInfo, fecha_desembolso: t})} />
-        
-        <View style={styles.row}>
-            <View style={{ flex: 1 }}>
-                <InputField label="Monto" value={creditInfo.monto_desembolso} icon={DollarSign} keyboardType="numeric"
-                  onChange={(t:any) => setCreditInfo({...creditInfo, monto_desembolso: t})} />
-            </View>
-            <View style={{ flex: 1 }}>
-                <InputField label="Saldo Capital" value={creditInfo.saldo_capital} icon={DollarSign} keyboardType="numeric"
-                  onChange={(t:any) => setCreditInfo({...creditInfo, saldo_capital: t})} />
-            </View>
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+              <CheckCircle2 size={18} color={Theme.colors.primary} />
+              <Text style={styles.cardHeaderTitle}>DETALLES DE LA VISITA</Text>
+          </View>
+
+          <Text style={styles.label}>¿Se encontró al cliente?</Text>
+          <View style={styles.buttonGroup}>
+              {['SÍ', 'NO'].map((val) => (
+                  <TouchableOpacity 
+                    key={val}
+                    style={[styles.choiceButton, (found === (val === 'SÍ')) && styles.activeChoice]}
+                    onPress={() => setFound(val === 'SÍ')}
+                  >
+                      <Text style={[styles.choiceText, (found === (val === 'SÍ')) && styles.activeChoiceText]}>{val}</Text>
+                  </TouchableOpacity>
+              ))}
+          </View>
+
+          <Text style={styles.label}>Estado de Pago</Text>
+          <View style={styles.paymentGroup}>
+              {['PAGARÁ', 'PAGÓ', 'EMITE RECLAMO'].map((status) => (
+              <TouchableOpacity 
+                  key={status}
+                  style={[styles.paymentButton, paymentStatus === status && styles.activePayment]}
+                  onPress={() => setPaymentStatus(status)}
+              >
+                  <Text style={[styles.paymentText, paymentStatus === status && styles.activePaymentText]}>{status}</Text>
+              </TouchableOpacity>
+              ))}
+          </View>
+
+          <Text style={styles.label}>Observaciones:</Text>
+          <TextInput
+              style={styles.textArea}
+              multiline
+              numberOfLines={4}
+              value={observation}
+              onChangeText={setObservation}
+              placeholder="Escribe aquí los detalles..."
+              placeholderTextColor={Theme.colors.textMuted}
+          />
         </View>
 
-        <View style={styles.row}>
-            <View style={{ flex: 1 }}>
-                <InputField label="Cuotas Totales" value={creditInfo.nro_cuotas} icon={ListOrdered} keyboardType="numeric"
-                  onChange={(t:any) => setCreditInfo({...creditInfo, nro_cuotas: t})} />
-            </View>
-            <View style={{ flex: 1 }}>
-                <InputField label="Cuotas Pagadas" value={creditInfo.cuotas_pagadas} icon={CheckCircle2} keyboardType="numeric"
-                  onChange={(t:any) => setCreditInfo({...creditInfo, cuotas_pagadas: t})} />
-            </View>
+        <View style={styles.actionBlock}>
+          <TouchableOpacity 
+              style={[styles.mainButton, styles.registerButton]} 
+              onPress={() => handleSubmit('visitado')}
+              disabled={loading}
+          >
+              {loading ? <ActivityIndicator color="#fff" /> : (
+                  <>
+                      <CheckCircle2 color="#fff" size={20} />
+                      <Text style={styles.mainButtonText}>REGISTRAR VISITA</Text>
+                  </>
+              )}
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+              style={[styles.mainButton, styles.reproButton]} 
+              onPress={() => setReproModalVisible(true)}
+              disabled={loading}
+          >
+              <RotateCcw color="#fff" size={20} />
+              <Text style={styles.mainButtonText}>REPROGRAMARÁ</Text>
+          </TouchableOpacity>
         </View>
+      </ScrollView>
 
-        <InputField label="Monto de la Cuota" value={creditInfo.monto_cuota} icon={DollarSign} keyboardType="numeric"
-          onChange={(t:any) => setCreditInfo({...creditInfo, monto_cuota: t})} />
-
-        <InputField label="Condición Contable" value={creditInfo.condicion_contable} icon={FileText} 
-          onChange={(t:any) => setCreditInfo({...creditInfo, condicion_contable: t})} />
-      </View>
-      
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-            <CheckCircle2 size={20} color={Theme.colors.primary} />
-            <Text style={styles.cardHeaderTitle}>DETALLES DE LA VISITA</Text>
-        </View>
-
-        <Text style={styles.label}>¿Se encontró al cliente?</Text>
-        <View style={styles.buttonGroup}>
-            {['SÍ', 'NO'].map((val) => (
-                <TouchableOpacity 
-                  key={val}
-                  style={[styles.choiceButton, (found === (val === 'SÍ')) && styles.activeChoice]}
-                  onPress={() => setFound(val === 'SÍ')}
-                >
-                    <Text style={[styles.choiceText, (found === (val === 'SÍ')) && styles.activeChoiceText]}>{val}</Text>
-                </TouchableOpacity>
-            ))}
-        </View>
-
-        <Text style={styles.label}>Estado de Pago</Text>
-        <View style={styles.paymentGroup}>
-            {['PAGARÁ', 'PAGÓ', 'EMITE RECLAMO'].map((status) => (
-            <TouchableOpacity 
-                key={status}
-                style={[styles.paymentButton, paymentStatus === status && styles.activePayment]}
-                onPress={() => setPaymentStatus(status)}
-            >
-                <Text style={[styles.paymentText, paymentStatus === status && styles.activePaymentText]}>{status}</Text>
-            </TouchableOpacity>
-            ))}
-        </View>
-
-        <Text style={styles.label}>Observaciones adicionales:</Text>
-        <TextInput
-            style={styles.textArea}
-            multiline
-            numberOfLines={4}
-            value={observation}
-            onChangeText={setObservation}
-            placeholder="Escribe aquí los detalles..."
-            placeholderTextColor={Theme.colors.textMuted}
-        />
-      </View>
-
-      <View style={styles.actionBlock}>
-        <TouchableOpacity 
-            style={[styles.mainButton, styles.registerButton]} 
-            onPress={() => handleSubmit('visitado')}
-            disabled={loading}
-        >
-            {loading ? <ActivityIndicator color="#fff" /> : (
-                <>
-                    <CheckCircle2 color="#fff" size={24} />
-                    <Text style={styles.mainButtonText}>REGISTRAR VISITA</Text>
-                </>
-            )}
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-            style={[styles.mainButton, styles.reproButton]} 
-            onPress={() => handleSubmit('REPROGRAMAR')}
-            disabled={loading}
-        >
-            <RotateCcw color="#fff" size={24} />
-            <Text style={styles.mainButtonText}>REPROGRAMARÁ</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      {/* REPRO MODAL */}
+      <Modal visible={reproModalVisible} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+              <View style={styles.modalCard}>
+                  <Text style={styles.modalTitle}>REPROGRAMACIÓN</Text>
+                  <InputField label="Nueva Fecha Tentativa" value={reproDate} icon={Calendar} 
+                      onChange={setReproDate} placeholder="Ej: 2026-04-10" />
+                  <InputField label="Motivo de Reprogramación" value={reproReason} icon={FileText} 
+                      onChange={setReproReason} />
+                  <View style={styles.modalActions}>
+                      <TouchableOpacity style={styles.cancelBtn} onPress={() => setReproModalVisible(false)}>
+                          <Text style={styles.cancelTxt}>CANCELAR</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.confirmBtn} onPress={handleReprogramar}>
+                          <Text style={styles.confirmTxt}>CONFIRMAR</Text>
+                      </TouchableOpacity>
+                  </View>
+              </View>
+          </View>
+      </Modal>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Theme.colors.background, padding: 20 },
+  container: { flex: 1, padding: 20 },
   headerTitle: { fontSize: 28, fontWeight: 'bold', color: Theme.colors.text },
   clientSubtitle: { fontSize: 16, color: Theme.colors.primary, marginBottom: 20 },
   card: { backgroundColor: Theme.colors.surface, borderRadius: 24, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: Theme.colors.border },
   cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20 },
-  cardHeaderTitle: { fontSize: 14, fontWeight: '900', color: Theme.colors.textMuted, letterSpacing: 1 },
+  cardHeaderTitle: { fontSize: 13, fontWeight: '900', color: Theme.colors.textMuted, letterSpacing: 1 },
   row: { flexDirection: 'row', gap: 15 },
   inputContainer: { marginBottom: 15 },
   inputLabel: { fontSize: 12, color: Theme.colors.textMuted, marginBottom: 6, marginLeft: 4 },
@@ -254,5 +290,15 @@ const styles = StyleSheet.create({
   mainButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 20, borderRadius: 20, gap: 12 },
   registerButton: { backgroundColor: Theme.colors.success },
   reproButton: { backgroundColor: Theme.colors.primary },
-  mainButtonText: { color: '#fff', fontWeight: '900', fontSize: 16 }
+  mainButtonText: { color: '#fff', fontWeight: '900', fontSize: 16 },
+  
+  // Modal styles
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', padding: 20 },
+  modalCard: { backgroundColor: Theme.colors.surface, borderRadius: 24, padding: 24, borderWidth: 1, borderColor: Theme.colors.border, gap: 10 },
+  modalTitle: { fontSize: 18, fontWeight: '900', color: Theme.colors.text, marginBottom: 10, textAlign: 'center' },
+  modalActions: { flexDirection: 'row', gap: 10, marginTop: 20 },
+  cancelBtn: { flex: 1, padding: 16, borderRadius: 12, backgroundColor: Theme.colors.border, alignItems: 'center' },
+  confirmBtn: { flex: 1, padding: 16, borderRadius: 12, backgroundColor: Theme.colors.primary, alignItems: 'center' },
+  cancelTxt: { color: Theme.colors.text, fontWeight: 'bold' },
+  confirmTxt: { color: '#fff', fontWeight: 'bold' },
 });

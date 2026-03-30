@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { StatusBar, ActivityIndicator, View } from 'react-native';
+import { StatusBar, ActivityIndicator, View, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { initSyncDatabase } from './src/database/db';
 import { AppNavigator } from './src/navigation/AppNavigator';
+import { idleMonitor } from './src/services/IdleMonitorService';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
@@ -14,6 +16,8 @@ export default function App() {
     const bootstrap = async () => {
       try {
         await initSyncDatabase();
+        idleMonitor.start(); // Start inactivity monitoring
+
         const storedUser = await AsyncStorage.getItem('user_data');
         if (storedUser) {
           setUser(JSON.parse(storedUser));
@@ -26,22 +30,25 @@ export default function App() {
     };
 
     bootstrap();
+    return () => idleMonitor.stop();
   }, []);
 
   if (!isReady) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', backgroundColor: '#0f172a' }}>
-        <ActivityIndicator size="large" color="#38bdf8" />
+      <View style={{ flex: 1, justifyContent: 'center', backgroundColor: '#121212' }}>
+        <ActivityIndicator size="large" color="#3498db" />
       </View>
     );
   }
 
   if (!user) {
     return (
-      <NavigationContainer>
-        <StatusBar barStyle="light-content" />
-        <LoginScreen onLoginSuccess={setUser} />
-      </NavigationContainer>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+          <LoginScreen onLoginSuccess={setUser} />
+        </NavigationContainer>
+      </SafeAreaProvider>
     );
   }
 
@@ -52,11 +59,13 @@ export default function App() {
   };
 
   return (
-    <NavigationContainer>
-      <View style={{ flex: 1, backgroundColor: '#0f172a' }}>
-        <StatusBar barStyle="light-content" />
-        <AppNavigator user={user} onLogout={logout} />
-      </View>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <View style={{ flex: 1, backgroundColor: '#121212' }}>
+          <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+          <AppNavigator user={user} onLogout={logout} />
+        </View>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }

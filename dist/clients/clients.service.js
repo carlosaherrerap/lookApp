@@ -33,22 +33,46 @@ let ClientsService = class ClientsService {
             order: { created_at: 'DESC' }
         });
     }
-    async markEnCamino(id) {
-        const client = await this.clientsRepository.findOne({ where: { id } });
+    async markEnCamino(id, workerId) {
+        const client = await this.clientsRepository.findOne({
+            where: { id },
+            relations: ['current_worker']
+        });
         if (!client)
             throw new common_1.NotFoundException('Cliente no encontrado');
-        if (client.status === 'EN CAMINO') {
-            throw new common_1.ConflictException('Ya hay un trabajador en camino a este cliente');
+        if (client.status === 'EN CAMINO' && client.current_worker && client.current_worker.id !== workerId) {
+            throw new common_1.ConflictException('Este cliente ya está siendo visitado por otro trabajador');
+        }
+        const activeClient = await this.clientsRepository.findOne({
+            where: { current_worker: { id: workerId }, status: 'EN CAMINO' }
+        });
+        if (activeClient && activeClient.id !== id) {
+            activeClient.status = 'PROGRAMADO';
+            activeClient.current_worker = null;
+            await this.clientsRepository.save(activeClient);
         }
         client.status = 'EN CAMINO';
+        client.current_worker = { id: workerId };
         return this.clientsRepository.save(client);
     }
     async update(id, updateData) {
         const client = await this.clientsRepository.findOne({ where: { id } });
         if (!client)
             throw new common_1.NotFoundException('Cliente no encontrado');
+        const hasChanges = Object.keys(updateData).some(key => client[key] !== updateData[key]);
+        if (!hasChanges)
+            return client;
+        if (client.status === 'EN CAMINO' && updateData.status && updateData.status !== 'EN CAMINO') {
+            client.current_worker = null;
+        }
         Object.assign(client, updateData);
         return this.clientsRepository.save(client);
+    }
+    async findActiveByWorker(workerId) {
+        return this.clientsRepository.findOne({
+            where: { current_worker: { id: workerId }, status: 'EN CAMINO' },
+            relations: ['credit_info']
+        });
     }
 };
 exports.ClientsService = ClientsService;

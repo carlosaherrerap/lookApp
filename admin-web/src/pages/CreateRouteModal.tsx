@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap, Popup } from 'react-leaflet';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
 
@@ -113,7 +114,7 @@ export const CreateRouteModal: React.FC<CreateRouteProps> = ({ onClose, onSucces
   useEffect(() => {
     const fetchWorkers = async () => {
       const token = localStorage.getItem('admin_token');
-      const res = await axios.get('http://localhost:3009/users/workers', {
+      const res = await axios.get(`${API_BASE_URL}/users/workers`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setWorkers(res.data);
@@ -182,11 +183,11 @@ export const CreateRouteModal: React.FC<CreateRouteProps> = ({ onClose, onSucces
       };
 
       if (initialRoute) {
-        await axios.patch(`http://localhost:3009/routes/${initialRoute.id}`, payload, {
+        await axios.patch(`${API_BASE_URL}/routes/${initialRoute.id}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } else {
-        await axios.post('http://localhost:3009/routes', payload, {
+        await axios.post(`${API_BASE_URL}/routes`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
@@ -205,7 +206,7 @@ export const CreateRouteModal: React.FC<CreateRouteProps> = ({ onClose, onSucces
       <div className="glass-panel" style={{ flex: 1, display: 'flex', overflow: 'hidden', padding: 0 }}>
         
         {/* Form Sidebar */}
-        <div style={{ width: '350px', background: 'var(--primary-color)', padding: '2rem', display: 'flex', flexDirection: 'column', color: '#FFFFFF' }}>
+        <div style={{ width: '350px', background: '#1B2A3D', padding: '2rem', display: 'flex', flexDirection: 'column', color: '#ccc', borderRight: '1px solid #2A3D55' }}>
           <h3>{initialRoute ? 'Editor de Ruta' : 'Diseñador de Rutas'}</h3>
           <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
             {initialRoute ? 'Edita los pines existentes o añade nuevos.' : 'Haz click en el mapa para añadir pines de clientes.'}

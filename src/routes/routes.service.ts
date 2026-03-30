@@ -62,37 +62,36 @@ export class RoutesService {
 
       const { clients: inputClients, ...routeFields } = updateData;
 
-      // 1. Manejo de borrado de clientes (Orphans)
+      // 1. Manejo de sincronización de clientes (Pines)
       if (inputClients) {
+        // IDs que vienen en el payload para conservar
         const inputClientIds = inputClients
           .filter((c: any) => c.id)
           .map((c: any) => Number(c.id));
         
-        const clientsToDeleteResource = route.clients
+        // Clientes actuales en BD que NO están en el payload (Orphans)
+        const clientsToDelete = route.clients
           .filter(c => !inputClientIds.includes(Number(c.id)))
           .map(c => c.id);
 
-        if (clientsToDeleteResource.length > 0) {
-          await manager.delete('clients', clientsToDeleteResource);
+        if (clientsToDelete.length > 0) {
+          await manager.delete('clients', clientsToDelete);
         }
 
-        // 2. Sincronizar clientes (Actualizar existentes y Crear nuevos)
-        // Eliminamos la propiedad clients del objeto para que merge no intente cascada
-        // Sincronizar clientes secuencialmente para evitar el error de pg concurrente en transacciones
+        // 2. Sincronizar clientes (Actualizar asistentes y Crear nuevos)
+        // Usamos manager.save en lugar de update para que TypeORM maneje correctamente los objetos de Geometría PostGIS
         for (const c of inputClients) {
+          const clientData = {
+            ...c,
+            route: route // Asegurar asociación con la ruta actual
+          };
+
           if (c.id) {
-            // Actualizar existente
-            await manager.update('clients', c.id, { 
-              name: c.name, 
-              address: c.address, 
-              description: c.description,
-              location: c.location,
-              visit_order: c.visit_order,
-              route: route 
-            });
+            // Actualizar existente (merge automático por ID)
+            await manager.save('clients', clientData);
           } else {
             // Crear nuevo
-            const newClient = manager.create('clients', { ...c, route: route });
+            const newClient = manager.create('clients', clientData);
             await manager.save('clients', newClient);
           }
         }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { Theme } from '../constants/theme';
 import { Map, ChevronRight, CheckCircle2 } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -37,25 +37,36 @@ export const ClientDetailScreen = ({ route, navigation }: any) => {
 
   const renderClient = ({ item }: { item: any }) => {
     const isFinished = item.status === 'visitado' || item.status === 'abandonado' || item.status === 'visited';
+    const isAbandoned = item.status === 'abandonado';
     
     return (
       <TouchableOpacity 
-        style={[styles.clientCard, isFinished && { borderLeftColor: item.status === 'abandonado' ? Theme.colors.error : Theme.colors.success }]}
-        onPress={() => navigation.navigate('ClientVisit', { client: item })}
+        style={[
+          styles.clientCard, 
+          isFinished && { 
+            borderLeftColor: isAbandoned ? Theme.colors.error : Theme.colors.success,
+            backgroundColor: isAbandoned ? Theme.colors.error + '10' : Theme.colors.success + '10'
+          }
+        ]}
+        onPress={() => isFinished ? Alert.alert('Completado', 'Esta visita ya ha sido registrada.') : navigation.navigate('ClientVisit', { client: item })}
       >
         <View style={styles.clientInfo}>
-          <Text style={styles.clientName}>{item.name}</Text>
+          <Text style={[styles.clientName, isFinished && { color: Theme.colors.textMuted }]}>{item.name}</Text>
           <Text style={styles.clientAddress} numberOfLines={1}>{item.address || 'Sin dirección'}</Text>
           {isFinished && (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 }}>
-              <CheckCircle2 size={12} color={item.status === 'abandonado' ? Theme.colors.error : Theme.colors.success} />
-              <Text style={{ color: item.status === 'abandonado' ? Theme.colors.error : Theme.colors.success, fontSize: 12, fontWeight: 'bold' }}>
-                {item.status.toUpperCase()}
+              <CheckCircle2 size={12} color={isAbandoned ? Theme.colors.error : Theme.colors.success} />
+              <Text style={{ color: isAbandoned ? Theme.colors.error : Theme.colors.success, fontSize: 12, fontWeight: 'bold' }}>
+                {isAbandoned ? 'RECHAZADO / ABANDONADO' : 'VISITA COMPLETADA'}
               </Text>
             </View>
           )}
         </View>
-        <ChevronRight size={20} color={Theme.colors.textMuted} />
+        {isFinished ? (
+          <CheckCircle2 size={20} color={isAbandoned ? Theme.colors.error : Theme.colors.success} />
+        ) : (
+          <ChevronRight size={20} color={Theme.colors.textMuted} />
+        )}
       </TouchableOpacity>
     );
   };

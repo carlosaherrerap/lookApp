@@ -24,8 +24,11 @@ let ClientsController = class ClientsController {
     getMundo() {
         return this.clientsService.findMundo();
     }
-    markEnCamino(id) {
-        return this.clientsService.markEnCamino(+id);
+    getActive(req) {
+        return this.clientsService.findActiveByWorker(req.user.userId);
+    }
+    markEnCamino(id, req) {
+        return this.clientsService.markEnCamino(+id, req.user.userId);
     }
     update(id, updateData) {
         return this.clientsService.update(+id, updateData);
@@ -39,10 +42,18 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "getMundo", null);
 __decorate([
+    (0, common_1.Get)('active'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ClientsController.prototype, "getActive", null);
+__decorate([
     (0, common_1.Patch)(':id/en-camino'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "markEnCamino", null);
 __decorate([

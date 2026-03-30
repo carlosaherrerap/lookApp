@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { MapPin, ChevronRight, RefreshCw, PlusCircle } from 'lucide-react';
+import { MapPin, RefreshCw, PlusCircle } from 'lucide-react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 import { CreateRouteModal } from './CreateRouteModal';
 
 export const RoutesPage: React.FC = () => {
@@ -23,7 +24,7 @@ export const RoutesPage: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('admin_token');
-      const res = await axios.get('http://localhost:3009/routes', {
+      const res = await axios.get(`${API_BASE_URL}/routes`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRoutes(res.data);
@@ -47,7 +48,7 @@ export const RoutesPage: React.FC = () => {
             <RefreshCw size={18} />
           </button>
           <button onClick={() => setIsModalOpen(true)} style={{ background: 'var(--primary-color)', color: 'var(--bg-color)', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <PlusCircle size={18} /> Nueva Ruta Map X
+            <PlusCircle size={18} /> Nueva Ruta Schedule's
           </button>
         </div>
       </div>
@@ -79,7 +80,7 @@ export const RoutesPage: React.FC = () => {
               </div>
 
               <span style={{ padding: '0.4rem 0.8rem', borderRadius: '8px', fontSize: '0.8rem', background: r.status === 'completed' || r.status === 'completado' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(146, 220, 229, 0.1)', color: r.status === 'completed' || r.status === 'completado' ? 'var(--success-color)' : 'var(--primary-color)', textTransform: 'capitalize' }}>
-                {r.status.replace('_', ' ')}
+                {(r.status || 'planeado').replace('_', ' ')}
               </span>
               
               <button onClick={() => openEditModal(r)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--surface-border)', color: 'var(--text-main)', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>
@@ -92,7 +93,7 @@ export const RoutesPage: React.FC = () => {
         {!loading && routes.length === 0 && (
           <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
             <p>Aún no hay rutas creadas.</p>
-            <p>Haz clic en "Nueva Ruta Map X" para asignar una desde el Mapa Interactivo.</p>
+            <p>Haz clic en "Nueva Ruta Schedule's" para asignar una desde el Mapa Interactivo.</p>
           </div>
         )}
       </div>

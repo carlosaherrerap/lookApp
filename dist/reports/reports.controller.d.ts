@@ -4,5 +4,5 @@ export declare class ReportsController {
     private readonly reportsService;
     private readonly clientsService;
     constructor(reportsService: ReportsService, clientsService: ClientsService);
-    createReport(createReportDto: any, req: any): Promise<import("./entities/visit-report.entity").VisitReport>;
+    createReport(createReportDto: any, req: any): Promise<import("./entities/visit-report.entity").VisitReport[]>;
 }

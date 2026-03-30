@@ -57,7 +57,6 @@ export const RouteMapScreen = ({ route, navigation }: any) => {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}
-        customMapStyle={mapStyle}
       >
         <Polyline
           coordinates={routePath}
@@ -100,18 +99,10 @@ export const RouteMapScreen = ({ route, navigation }: any) => {
   );
 };
 
-const mapStyle = [
-  {
-    "featureType": "poi",
-    "elementType": "labels",
-    "stylers": [{ "visibility": "off" }]
-  }
-];
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#fff',
   },
   map: {
     flex: 1,

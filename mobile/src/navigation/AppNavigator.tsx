@@ -3,8 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Map, Globe, UserCheck } from 'lucide-react-native';
 import { Theme } from '../constants/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// Screens
 import { RoutesScreen } from '../screens/RoutesScreen';
 import { ClientDetailScreen } from '../screens/ClientDetailScreen';
 import { ClientVisitScreen } from '../screens/ClientVisitScreen';
@@ -12,6 +12,7 @@ import { ReportVisitScreen } from '../screens/ReportVisitScreen';
 import { RouteMapScreen } from '../screens/RouteMapScreen';
 import { MundoScreen } from '../screens/MundoScreen';
 import { StatesScreen } from '../screens/StatesScreen';
+import { HeaderConnectivity } from '../components/HeaderConnectivity';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -22,6 +23,7 @@ const RutasStack = ({ user, onLogout }: any) => (
       headerStyle: { backgroundColor: Theme.colors.surface },
       headerTintColor: Theme.colors.text,
       headerTitleStyle: { fontWeight: 'bold' },
+      headerRight: () => <HeaderConnectivity />,
       animation: 'slide_from_right',
     }}
   >
@@ -29,7 +31,7 @@ const RutasStack = ({ user, onLogout }: any) => (
       {(props) => <RoutesScreen {...props} user={user} onLogout={onLogout} />}
     </Stack.Screen>
     <Stack.Screen name="ClientDetail" component={ClientDetailScreen} options={{ title: 'Clientes' }} />
-    <Stack.Screen name="ClientVisit" component={ClientVisitScreen} options={{ title: 'Visita' }} />
+    <Stack.Screen name="ClientVisit" component={ClientVisitScreen} options={{ title: 'Visita', headerShown: false }} />
     <Stack.Screen name="ReportVisit" component={ReportVisitScreen} options={{ title: 'Registro' }} />
     <Stack.Screen name="RouteMap" component={RouteMapScreen} options={{ headerShown: false }} />
   </Stack.Navigator>
@@ -41,15 +43,18 @@ const MundoStack = () => (
         headerStyle: { backgroundColor: Theme.colors.surface },
         headerTintColor: Theme.colors.text,
         headerTitleStyle: { fontWeight: 'bold' },
+        headerRight: () => <HeaderConnectivity />,
       }}
     >
       <Stack.Screen name="MundoHome" component={MundoScreen} options={{ title: 'Lista Global' }} />
-      <Stack.Screen name="ClientVisit" component={ClientVisitScreen} options={{ title: 'Visita Global' }} />
+      <Stack.Screen name="ClientVisit" component={ClientVisitScreen} options={{ title: 'Visita Global', headerShown: false }} />
       <Stack.Screen name="ReportVisit" component={ReportVisitScreen} options={{ title: 'Registro Global' }} />
     </Stack.Navigator>
 );
 
 export const AppNavigator = ({ user, onLogout }: { user: any, onLogout: () => void }) => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -57,8 +62,10 @@ export const AppNavigator = ({ user, onLogout }: { user: any, onLogout: () => vo
         tabBarStyle: { 
             backgroundColor: Theme.colors.surface,
             borderTopColor: Theme.colors.border,
-            height: 60,
-            paddingBottom: 8
+            borderTopWidth: 1,
+            height: 55 + insets.bottom,    // Safe area inset for Android nav bar
+            paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
+            paddingTop: 6,
         },
         tabBarActiveTintColor: Theme.colors.primary,
         tabBarInactiveTintColor: Theme.colors.textMuted,

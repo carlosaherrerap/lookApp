@@ -6,19 +6,19 @@
 
 :root {
   --font-primary: 'Inter', sans-serif;
-  --bg-color: #0A0E12; /* Adobe Dark */
-  --surface-color: #1A1D21;
-  --surface-border: #2D3139;
-  --primary-color: #00a4e4; /* Adobe Blue */
-  --primary-glow: rgba(0, 164, 228, 0.2);
-  --secondary-color: #0078aa;
-  --accent-color: #00f0ff; /* Adobe Cyan */
-  --text-main: #FFFFFF;
-  --text-muted: #8E9196;
-  --success-color: #00f0ff;
-  --warning-color: #FFB800;
-  --danger-color: #FF4D4D;
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --bg-color: #121212; /* Adobe Dark */
+  --surface-color: #1e1e1e; /* Lightroom surface */
+  --surface-border: #2d2d2d;
+  --primary-color: #3498db; /* Professional Blue */
+  --primary-glow: rgba(52, 152, 219, 0.2);
+  --secondary-color: #2980b9;
+  --accent-color: #5dade2; /* Lighter Blue */
+  --text-main: #CCCCCC; /* Muted White */
+  --text-muted: #888888;
+  --success-color: #2ecc71;
+  --warning-color: #f39c12;
+  --danger-color: #e74c3c;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
 }
 
 * {
@@ -87,7 +87,7 @@ body {
   flex-direction: column;
   gap: 2rem;
   border-right: none;
-  background: var(--primary-color);
+  background: #1B2A3D;
   color: #FFFFFF;
   z-index: 10;
 }

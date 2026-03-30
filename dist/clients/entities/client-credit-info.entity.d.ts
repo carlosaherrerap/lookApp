@@ -7,7 +7,7 @@ export declare class ClientCreditInfo {
     monto_desembolso: number;
     moneda: string;
     nro_cuotas: number;
-    nro_cuotas_pagadas: number;
+    cuotas_pagadas: number;
     monto_cuota: number;
     condicion_contable: string;
     saldo_capital: number;

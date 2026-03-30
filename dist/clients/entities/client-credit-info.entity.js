@@ -20,7 +20,7 @@ let ClientCreditInfo = class ClientCreditInfo {
     monto_desembolso;
     moneda;
     nro_cuotas;
-    nro_cuotas_pagadas;
+    cuotas_pagadas;
     monto_cuota;
     condicion_contable;
     saldo_capital;
@@ -59,7 +59,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
-], ClientCreditInfo.prototype, "nro_cuotas_pagadas", void 0);
+], ClientCreditInfo.prototype, "cuotas_pagadas", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'decimal', precision: 12, scale: 2, nullable: true }),
     __metadata("design:type", Number)

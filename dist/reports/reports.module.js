@@ -12,6 +12,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const reports_service_1 = require("./reports.service");
 const reports_controller_1 = require("./reports.controller");
 const visit_report_entity_1 = require("./entities/visit-report.entity");
+const client_entity_1 = require("../clients/entities/client.entity");
 const client_credit_info_entity_1 = require("../clients/entities/client-credit-info.entity");
 const events_module_1 = require("../events/events.module");
 const clients_module_1 = require("../clients/clients.module");
@@ -20,7 +21,7 @@ let ReportsModule = class ReportsModule {
 exports.ReportsModule = ReportsModule;
 exports.ReportsModule = ReportsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([visit_report_entity_1.VisitReport, client_credit_info_entity_1.ClientCreditInfo]), events_module_1.EventsModule, clients_module_1.ClientsModule],
+        imports: [typeorm_1.TypeOrmModule.forFeature([visit_report_entity_1.VisitReport, client_credit_info_entity_1.ClientCreditInfo, client_entity_1.Client]), events_module_1.EventsModule, clients_module_1.ClientsModule],
         controllers: [reports_controller_1.ReportsController],
         providers: [reports_service_1.ReportsService],
         exports: [reports_service_1.ReportsService],

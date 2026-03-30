@@ -27,6 +27,7 @@ __decorate([
 ], TimeLog.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
+    (0, typeorm_1.JoinColumn)({ name: 'worker_id' }),
     __metadata("design:type", user_entity_1.User)
 ], TimeLog.prototype, "worker", void 0);
 __decorate([

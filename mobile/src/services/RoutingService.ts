@@ -20,7 +20,7 @@ export class RoutingService {
       const coordsString = waypoints.map(w => `${w.lng},${w.lat}`).join(';');
       const url = `${this.OSRM_BASE_URL}/${coordsString}?overview=full&geometries=geojson`;
       
-      const response = await axios.get(url);
+      const response = await axios.get(url, { timeout: 5000 }); // 5s timeout
       
       if (response.data && response.data.routes && response.data.routes.length > 0) {
         // OSRM GeoJSON devuelve [lng, lat], react-native-maps Polyline espera {latitude, longitude}

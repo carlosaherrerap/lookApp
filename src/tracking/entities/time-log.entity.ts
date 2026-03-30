@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 @Entity('time_logs')
@@ -7,6 +7,7 @@ export class TimeLog {
   id: number;
 
   @ManyToOne(() => User)
+  @JoinColumn({ name: 'worker_id' })
   worker: User;
 
   @Column({

@@ -26,7 +26,7 @@ export class ClientCreditInfo {
   nro_cuotas: number;
 
   @Column({ nullable: true })
-  nro_cuotas_pagadas: number;
+  cuotas_pagadas: number; // 1:1 mapping with mobile payload
 
   @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
   monto_cuota: number;

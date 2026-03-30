@@ -1,4 +1,6 @@
 import { Route } from '../../routes/entities/route.entity';
+import { User } from '../../users/entities/user.entity';
+import { ClientCreditInfo } from './client-credit-info.entity';
 export declare class Client {
     id: number;
     name: string;
@@ -14,5 +16,7 @@ export declare class Client {
     status: string;
     collected_data: any;
     route: Route;
+    current_worker: User;
+    credit_info: ClientCreditInfo;
     created_at: Date;
 }

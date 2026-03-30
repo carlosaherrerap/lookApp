@@ -65,25 +65,22 @@ let RoutesService = class RoutesService {
                 const inputClientIds = inputClients
                     .filter((c) => c.id)
                     .map((c) => Number(c.id));
-                const clientsToDeleteResource = route.clients
+                const clientsToDelete = route.clients
                     .filter(c => !inputClientIds.includes(Number(c.id)))
                     .map(c => c.id);
-                if (clientsToDeleteResource.length > 0) {
-                    await manager.delete('clients', clientsToDeleteResource);
+                if (clientsToDelete.length > 0) {
+                    await manager.delete('clients', clientsToDelete);
                 }
                 for (const c of inputClients) {
+                    const clientData = {
+                        ...c,
+                        route: route
+                    };
                     if (c.id) {
-                        await manager.update('clients', c.id, {
-                            name: c.name,
-                            address: c.address,
-                            description: c.description,
-                            location: c.location,
-                            visit_order: c.visit_order,
-                            route: route
-                        });
+                        await manager.save('clients', clientData);
                     }
                     else {
-                        const newClient = manager.create('clients', { ...c, route: route });
+                        const newClient = manager.create('clients', clientData);
                         await manager.save('clients', newClient);
                     }
                 }

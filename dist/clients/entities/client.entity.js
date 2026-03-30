@@ -12,6 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Client = void 0;
 const typeorm_1 = require("typeorm");
 const route_entity_1 = require("../../routes/entities/route.entity");
+const user_entity_1 = require("../../users/entities/user.entity");
+const client_credit_info_entity_1 = require("./client-credit-info.entity");
 let Client = class Client {
     id;
     name;
@@ -27,6 +29,8 @@ let Client = class Client {
     status;
     collected_data;
     route;
+    current_worker;
+    credit_info;
     created_at;
 };
 exports.Client = Client;
@@ -81,9 +85,9 @@ __decorate([
 ], Client.prototype, "fecha_visita", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'enum',
-        enum: ['pendiente', 'visitado', 'ausente', 'abandonado', 'otro', 'PROGRAMADO', 'EN CAMINO', 'REPROGRAMAR'],
-        default: 'pendiente',
+        type: 'varchar',
+        length: 30,
+        default: 'PROGRAMADO',
     }),
     __metadata("design:type", String)
 ], Client.prototype, "status", void 0);
@@ -96,6 +100,15 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'route_id' }),
     __metadata("design:type", route_entity_1.Route)
 ], Client.prototype, "route", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, { nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'current_worker_id' }),
+    __metadata("design:type", user_entity_1.User)
+], Client.prototype, "current_worker", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => client_credit_info_entity_1.ClientCreditInfo, (ci) => ci.client, { eager: false }),
+    __metadata("design:type", client_credit_info_entity_1.ClientCreditInfo)
+], Client.prototype, "credit_info", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamp with time zone' }),
     __metadata("design:type", Date)

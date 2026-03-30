@@ -3,8 +3,9 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme } from '../constants/theme';
+import { Config } from '../constants/Config';
 
-const API_URL = 'http://192.168.1.55:3009'; // Nueva IP descubierta
+const API_URL = Config.API_URL;
 
 export const LoginScreen = ({ onLoginSuccess }: { onLoginSuccess: (user: any) => void }) => {
   const [email, setEmail] = useState('');
@@ -23,7 +24,7 @@ export const LoginScreen = ({ onLoginSuccess }: { onLoginSuccess: (user: any) =>
         email,
         password,
       }, { 
-        timeout: 15000 
+        timeout: Config.TIMEOUT 
       });
 
       const { access_token, user } = response.data;

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 export const LoginPage: React.FC<{ onLogin: (token: string, user: any) => void }> = ({ onLogin }) => {
   const [email, setEmail] = useState('admin@mapx.com');
@@ -9,7 +10,7 @@ export const LoginPage: React.FC<{ onLogin: (token: string, user: any) => void }
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:3009/auth/login', { email, password });
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
       
       if (res.data.user.role !== 'admin') {
         setError('Acceso denegado: Solo administradores pueden ingresar al portal.');
@@ -23,9 +24,9 @@ export const LoginPage: React.FC<{ onLogin: (token: string, user: any) => void }
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', background: '#0a0e12', color: '#fff' }}>
-      <form onSubmit={handleLogin} style={{ background: '#1a1d21', padding: '2rem', borderRadius: '12px', width: '350px', border: '1px solid #2d3139' }}>
-        <h2 style={{ textAlign: 'center', color: '#00a4e4', marginBottom: '1.5rem', letterSpacing: '1px' }}>Schedule's Admin</h2>
+    <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', background: '#1B1B1F', color: '#ccc' }}>
+      <form onSubmit={handleLogin} style={{ background: '#232328', padding: '2rem', borderRadius: '12px', width: '350px', border: '1px solid #3A3A42' }}>
+        <h2 style={{ textAlign: 'center', color: '#0078D4', marginBottom: '1.5rem', letterSpacing: '1px' }}>Schedule's Admin</h2>
         {error && <p style={{ color: '#ef4444', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</p>}
         <input 
           type="email" 

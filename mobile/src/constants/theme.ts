@@ -1,17 +1,17 @@
 export const Theme = {
   colors: {
-    primary: '#00a4e4', // Adobe Blue
-    secondary: '#00f0ff', // Cyan Accent
-    background: '#0A0E12', // Deep Space Dark Blue
-    surface: '#1A1F26', // Adobe Surface
-    surfaceLight: '#2D343D',
-    border: '#3A424D',
-    text: '#FFFFFF',
-    textMuted: '#8A96A3',
-    success: '#00f0ff',
-    error: '#FF4D4D',
-    danger: '#FF4D4D',
-    warning: '#FFAA00',
+    primary: '#3498db', // Professional Blue
+    secondary: '#2980b9',
+    background: '#121212', // Adobe Dark
+    surface: '#1e1e1e', // Lightroom surface
+    surfaceLight: '#2d2d2d',
+    border: '#333333',
+    text: '#CCCCCC', // Muted white per user request
+    textMuted: '#888888',
+    success: '#2ecc71',
+    error: '#e74c3c',
+    danger: '#e74c3c',
+    warning: '#f39c12',
   },
   spacing: {
     xs: 4,

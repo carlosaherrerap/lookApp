@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Mail, RefreshCw } from 'lucide-react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 export const WorkersPage: React.FC = () => {
   const [workers, setWorkers] = useState<any[]>([]);
@@ -14,7 +15,7 @@ export const WorkersPage: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('admin_token');
-      const res = await axios.get(`http://localhost:3009/users/workers?search=${searchTerm}`, {
+      const res = await axios.get(`${API_BASE_URL}/users/workers?search=${searchTerm}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setWorkers(res.data);
@@ -30,7 +31,7 @@ export const WorkersPage: React.FC = () => {
     setSaving(true);
     try {
       const token = localStorage.getItem('admin_token');
-      await axios.post('http://localhost:3009/users', newWorker, {
+      await axios.post(`${API_BASE_URL}/users`, newWorker, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIsModalOpen(false);

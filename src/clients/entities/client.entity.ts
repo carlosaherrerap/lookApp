@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { Route } from '../../routes/entities/route.entity';
+import { User } from '../../users/entities/user.entity';
+import { ClientCreditInfo } from './client-credit-info.entity';
 
 @Entity('clients')
 export class Client {
@@ -21,7 +23,7 @@ export class Client {
     srid: 4326,
     nullable: true,
   })
-  location: any; // Se manejará como un objeto GeoJSON { type: 'Point', coordinates: [lng, lat] }
+  location: any;
 
   @Column({ nullable: true })
   visit_order: number;
@@ -42,9 +44,9 @@ export class Client {
   fecha_visita: string;
 
   @Column({
-    type: 'enum',
-    enum: ['pendiente', 'visitado', 'ausente', 'abandonado', 'otro', 'PROGRAMADO', 'EN CAMINO', 'REPROGRAMAR'],
-    default: 'pendiente',
+    type: 'varchar',
+    length: 30,
+    default: 'PROGRAMADO',
   })
   status: string;
 
@@ -54,6 +56,13 @@ export class Client {
   @ManyToOne(() => Route, (route) => route.clients, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'route_id' })
   route: Route;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'current_worker_id' })
+  current_worker: User;
+
+  @OneToOne(() => ClientCreditInfo, (ci) => ci.client, { eager: false })
+  credit_info: ClientCreditInfo;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
   created_at: Date;

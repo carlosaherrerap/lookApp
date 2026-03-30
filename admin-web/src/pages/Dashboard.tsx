@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { MapView } from '../components/MapView';
 import { Users, Route, CheckCircle2, Clock } from 'lucide-react';
 import { io } from 'socket.io-client';
+import { API_BASE_URL } from '../config';
 
-const SOCKET_URL = 'http://localhost:3009'; // Ajustar puerto según .env del backend
+const SOCKET_URL = API_BASE_URL; // Ajustado centralizadamente
 
 export const Dashboard: React.FC = () => {
   const [stats, setStats] = useState({
